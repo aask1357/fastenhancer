@@ -1,0 +1,126 @@
+model: "fastenhancer.dptransformer"
+model_kwargs:
+    channels: 48
+    kernel_size: [8, 3, 3]
+    stride: 4
+    dpt_kwargs:
+        num_blocks: 3
+        channels: 36
+        freq: 24
+        num_heads: 4
+        eps: 1.0e-5
+        positional_embedding: train # null | "fixed" | "train"
+        attn_bias: False
+        post_act: False
+        pre_norm: False
+        lookbehind: 31
+    pre_post_init: "linear_fixed"
+    n_fft: 512
+    hop_size: 256
+    win_size: 512
+    window: hann
+    stft_normalized: False
+    mask: null
+    activation: SiLU
+    activation_kwargs:
+        inplace: True
+    input_compression: 0.3
+    final_scale: True
+    normalize_final_conv: True
+    final_scale_init: "one"
+    weight_norm: True
+data:
+    dataset: VoiceBank-Demand
+    train:
+        clean_dir: "/home/shahn/Datasets/voicebank-demand/16k/clean_trainset_28spk_wav"
+        noisy_dir: "/home/shahn/Datasets/voicebank-demand/16k/noisy_trainset_28spk_wav"
+        metadata: "/home/shahn/Datasets/voicebank-demand/logfiles/log_trainset_28spk.txt"
+        segment_size: 32000
+    valid:
+        clean_dir: "/home/shahn/Datasets/voicebank-demand/16k/clean_testset_wav"
+        noisy_dir: "/home/shahn/Datasets/voicebank-demand/16k/noisy_testset_wav"
+        metadata: "/home/shahn/Datasets/voicebank-demand/logfiles/log_testset.txt"
+        segment_size: 32000
+    infer:
+        clean_dir: "/home/shahn/Datasets/voicebank-demand/16k/clean_testset_wav"
+        noisy_dir: "/home/shahn/Datasets/voicebank-demand/16k/noisy_testset_wav"
+        files:
+            - "p232_013"     # Music
+            - "p257_090"     # Outdoor
+            - "p232_010"     # Cafe
+            - "p257_042"     # Wind
+    pesq:
+        clean_dir: "/home/shahn/Datasets/voicebank-demand/16k/clean_testset_wav"
+        noisy_dir: "/home/shahn/Datasets/voicebank-demand/16k/noisy_testset_wav"
+        metadata: "/home/shahn/Datasets/voicebank-demand/logfiles/log_testset.txt"
+        segment_size: null
+    sampling_rate: 16000
+train:
+    test: False
+    batch_size: 64
+    print_interval: 1
+    max_epochs: 500
+    save_interval: 20
+    fp16: True
+    num_workers: 2
+    persistent_workers: True
+    clip_grad: null
+    seed: 1
+    plot_param_and_grad: True
+    losses:
+        mag_mse:
+            weight: 0.3
+        complex_mse:
+            weight: 0.2
+        consistency:
+            weight: 0.3
+            compression: 0.3
+        wav_l1:
+            weight: 0.2
+        pesq:
+            weight: 1.0e-3
+    optimizer: "AdamP"
+    optimizer_kwargs:
+        lr: 2.0e-3
+        weight_decay: 0.01  # normal weights -> 1e-2
+        wd_ratio: 1.0       # scale-invariant weights -> 1e-2
+        betas: [0.95, 0.999]
+    optimizer_groups:
+        -
+            regex_list:     # regular expressions of parameter names
+                - "dec_post\\.3\\.scale"            # scale
+            weight_decay: 0       # optimizer_kwargs to update
+            projection: disabled
+        -
+            regex_list:
+                - ".+parametrizations.+original1$"  # weight_v
+                - "enc_pre\\.0\\.weight"            # conv1d before BN
+                - "encoder\\.\\d\\.0\\.weight"      # conv1d before BN
+                - "dpt_(pre|post)\\.1\\.weight"     # conv1d before BN
+                - "(time|freq)_fc\\.weight"         # conv1d before BN
+                - "decoder\\.\\d\\.[03]\\.weight"   # conv1d before BN
+                - "dec_post\\.0\\.weight"           # conv1d before BN
+            projection: channelwise
+        -
+            regex_list:
+                - "dpt_(pre|post)\\.0\\.weight"     # `linear` -> conv1d -> BN
+                - "dec_post\\.3\\.weight"       # final conv
+            projection: layerwise
+    scheduler: CosineAnnealingWarmup
+    scheduler_kwargs:
+        warmup_iterations: 500
+        eta_min: 1.0e-6
+        warn: False
+valid:
+    batch_size: 64
+infer:
+    batch_size: 1
+    interval: 20
+pesq:
+    batch_size: 16
+    num_workers: 0              # num_workers for a dataloader
+    num_workers_executor: 16    # num_workers for a multiprocess executor
+    interval: 20
+    metrics_to_calculate:
+        pesq: True
+        stoi: True
