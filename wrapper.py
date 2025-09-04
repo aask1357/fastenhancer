@@ -6,10 +6,7 @@ import importlib
 from typing import Optional, Dict, Any
 
 import torch
-try:
-    from torch import amp
-except:
-    from torch.cuda import amp
+from torch import amp
 from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.nn.utils import clip_grad_norm_, clip_grad_value_
 from torch.utils.data import DataLoader

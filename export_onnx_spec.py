@@ -201,7 +201,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         '--audio-path', type=str,
-        default="/home/shahn/Datasets/voicebank-demand/16k/noisy_testset_wav/p232_013.wav",
+        default="onnx/p232_013.wav",
         help="Path to audio."
     )
     parser.add_argument(
