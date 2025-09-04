@@ -1,5 +1,6 @@
 for LOOP in 1 2; do
     for NAME in fastenhancer_t fastenhancer_b fastenhancer_s bsrnn_xxt bsrnn_xt bsrnn_t bsrnn_s lisennet fspen; do
+        echo "Loop $LOOP/2, $NAME"
         printf "\n$NAME\n" >> onnx/delete_it.txt
         for IDX in {1..10}; do
             python test_onnx_spec.py \
@@ -8,6 +9,7 @@ for LOOP in 1 2; do
     done
     
     NAME=fastenhancer_m
+    echo "Loop $LOOP/2, $NAME"
     printf "\n$NAME\n" >> onnx/delete_it.txt
     for IDX in {1..10}; do
         python test_onnx_spec.py \
@@ -16,6 +18,7 @@ for LOOP in 1 2; do
     done
     
     NAME=fastenhancer_l
+    echo "Loop $LOOP/2, $NAME"
     printf "\n$NAME\n" >> onnx/delete_it.txt
     for IDX in {1..10}; do
         python test_onnx_spec.py \
@@ -24,6 +27,7 @@ for LOOP in 1 2; do
     done
 
     NAME=gtcrn
+    echo "Loop $LOOP/2, $NAME"
     printf "\n$NAME\n" >> onnx/delete_it.txt
     for IDX in {1..10}; do
         python test_onnx_spec.py \
