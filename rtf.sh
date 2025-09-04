@@ -1,6 +1,6 @@
 for LOOP in 1 2; do
     for NAME in fastenhancer_t fastenhancer_b fastenhancer_s bsrnn_xxt bsrnn_xt bsrnn_t bsrnn_s lisennet fspen; do
-        echo -e "\n$NAME" >> onnx/delete_it.txt
+        printf "\n$NAME\n" >> onnx/delete_it.txt
         for IDX in {1..10}; do
             python test_onnx_spec.py \
                 --onnx-path onnx/${NAME}.spec.onnx | tail -n 1 >> onnx/delete_it.txt
@@ -8,7 +8,7 @@ for LOOP in 1 2; do
     done
     
     NAME=fastenhancer_m
-    echo -e "\n$NAME" >> onnx/delete_it.txt
+    printf "\n$NAME\n" >> onnx/delete_it.txt
     for IDX in {1..10}; do
         python test_onnx_spec.py \
             --onnx-path onnx/${NAME}.spec.onnx \
@@ -16,15 +16,15 @@ for LOOP in 1 2; do
     done
     
     NAME=fastenhancer_l
-    echo -e "\n$NAME" >> onnx/delete_it.txt
+    printf "\n$NAME\n" >> onnx/delete_it.txt
     for IDX in {1..10}; do
         python test_onnx_spec.py \
             --onnx-path onnx/${NAME}.spec.onnx \
             --hop-size 100 | tail -n 1 >> onnx/delete_it.txt
     done
 
-    NAME=GTCRN
-    echo -e "\n$NAME" >> onnx/delete_it.txt
+    NAME=gtcrn
+    printf "\n$NAME\n" >> onnx/delete_it.txt
     for IDX in {1..10}; do
         python test_onnx_spec.py \
             --onnx-path onnx/${NAME}.spec.onnx \
