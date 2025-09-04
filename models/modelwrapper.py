@@ -6,7 +6,10 @@ from torch import amp
 from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.nn.utils import clip_grad_norm_, clip_grad_value_
 from torch.utils.data import DataLoader
-from torch.amp import GradScaler
+try:
+    from torch.amp import GradScaler
+except:
+    from torch.cuda.amp import GradScaler
 
 from optim import get_optimizer, get_scheduler
 from utils import clip_grad_norm_local, plot_param_and_grad
