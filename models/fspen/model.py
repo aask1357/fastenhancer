@@ -241,7 +241,7 @@ class ONNXModel(nn.Module):
             )
             self.fullband_encoder.append(encoder)
         self.fullband_encoder_post = nn.Conv1d(channels[-1], channels[-1], 1, bias=False)
-    
+
         self.feature_merge = nn.Sequential(
             nn.Linear(64, dpe_config.freq, bias=False),
             nn.ELU(inplace=True),
@@ -374,7 +374,8 @@ class ONNXModel(nn.Module):
         cache_out_list = []
         for idx, dpe in enumerate(self.dpe_blocks):
             x, *cache_out = dpe(x, *cache_in_list[idx*8:(idx+1)*8])
-            cache_out_list += cache_out
+            cache_out_list.extend(cache_out)
+        # cache_out_list = cache_in_list
 
         x = x.permute(1, 0, 3, 2)   # [B, T, C, F1]
         x = x.reshape(B*T, C, F1)   # [B*T, C=16, F=32]
@@ -417,6 +418,14 @@ class ONNXModel(nn.Module):
 
         # Model forward
         spec_hat, *cache_out_list = self.model_forward(spec_noisy, *args)
+
+        # Uncompress
+        mag_compressed = torch.linalg.norm(
+            spec_hat,
+            dim=3,
+            keepdim=True
+        )
+        spec_hat = spec_hat * mag_compressed.pow(1.0 / self.input_compression - 1.0)
         return spec_hat, *cache_out_list
 
 

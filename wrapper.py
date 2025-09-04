@@ -315,7 +315,7 @@ class ModelWrapper:
         if checkpoint is None:
             return
 
-        self._module.load_state_dict(checkpoint['model'], strict=False)
+        self._module.load_state_dict(checkpoint['model'], strict=True)
         self.epoch = checkpoint['epoch']
 
         if self.train_mode:

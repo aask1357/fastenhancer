@@ -52,7 +52,7 @@ class STFT(nn.Module):
                 device=device,
                 dtype=dtype
             ).pow(0.85)
-        elif win_type == "gtcrn":
+        elif win_type == "hann-sqrt":
             window = torch.hann_window(
                 win_size,
                 periodic=False,
@@ -300,11 +300,6 @@ class ONNXSTFT(nn.Module):
         return out, cache
 
 
-class ONNXiSTFT(ONNXSTFT):
-    def forward(self, x: Tensor, cache: Optional[Tensor]) -> Tuple[Tensor, Tensor]:
-        return super().inverse(x, cache)
-
-
 if __name__=="__main__":
     """Export STFT, iSTFT to ONNXRuntime"""
     import argparse
@@ -318,6 +313,10 @@ if __name__=="__main__":
     parser = argparse.ArgumentParser(description="Export STFT, iSTFT to ONNXRuntime.")
     parser.add_argument('--test-streaming', action='store_true')
     args = parser.parse_args()
+
+    class ONNXiSTFT(ONNXSTFT):
+        def forward(self, x: Tensor, cache: Optional[Tensor]) -> Tuple[Tensor, Tensor]:
+            return super().inverse(x, cache)
 
     N, H, W = 512, 256, 512
     win_type = "hann"

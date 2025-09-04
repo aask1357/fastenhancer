@@ -448,12 +448,16 @@ class ONNXModel(nn.Module):
         return spec_hat, *cache_out_list
 
     def load_state_dict(self, state_dict, strict: bool = True) -> None:
+        if not self.onnx:
+            super().load_state_dict(state_dict, strict=False)
+            return
+
         new_state_dict = {}
         for name, param in state_dict.items():
-            if re.match("rnn_time.+_l0$", name) is not None:
+            if re.match(r"rnn_time.+_l0$", name) is not None:
                 name = name.replace("_l0", "")
             new_state_dict[name] = param
-        super().load_state_dict(new_state_dict,strict=strict)
+        super().load_state_dict(new_state_dict, strict=strict)
 
 
 class Model(ONNXModel):

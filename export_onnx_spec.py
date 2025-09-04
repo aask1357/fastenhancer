@@ -39,6 +39,7 @@ def main(args):
     n_fft = hps.model_kwargs.n_fft
     hop_size = hps.model_kwargs.hop_size
     win_size = hps.model_kwargs.win_size
+    hps.model = ".".join(hps.model.split(".")[:-1])
     wrapper = ModelWrapper(hps)
     wrapper.load()
     wrapper.eval()
@@ -67,7 +68,6 @@ def main(args):
 
     # Prepare cache
     cache_list = model.initialize_cache(torch.randn(1))
-    cache_istft = model.stft.initialize_cache(torch.randn(1))
 
     # Test
     if args.test_remove_weight_reparam:
@@ -106,8 +106,9 @@ def main(args):
         )
         with torch.no_grad():
             out = []
-            for i in tqdm(range(spec.size(2))):
-                spec_i = spec[:, :, i:i+1, :]
+            STEP = 1
+            for i in tqdm(range(0, spec.size(2), STEP)):
+                spec_i = spec[:, :, i:i+STEP, :]
                 spec_hat, *cache_list = model(spec_i, *cache_list)
                 spec_hat = torch.view_as_complex(spec_hat)
                 out.append(spec_hat)
@@ -161,9 +162,6 @@ def main(args):
     cache_list = [x.numpy() for x in cache_list]
     onnx_input = {f"cache_in_{j}": x for j, x in enumerate(cache_list)}
     tic = time.perf_counter()
-    mapping = {
-        output.name: idx for idx, output in enumerate(sess.get_outputs())
-    }
     for idx in tqdm(range(0, spec.shape[2])):
         onnx_input["spec_in"] = spec[:, :, idx:idx+1, :]
         out = sess.run(None, onnx_input)
@@ -174,6 +172,7 @@ def main(args):
     print(f">>> RTF: {(toc - tic) * 16_000 / length}")
 
     if args.save_output:
+        print("Saving the output audio...", end=" ")
         spec_out = torch.from_numpy(np.concatenate(spec_out, axis=2))
         spec_out = torch.view_as_complex(spec_out)
         wav_out = spec_out.istft(
@@ -181,6 +180,7 @@ def main(args):
             window=window, return_complex=False
         ).clamp(min=-1.0, max=1.0).squeeze()
         scipy.io.wavfile.write("onnx/delete_it_onnx.wav", 16_000, wav_out.numpy())
+        print("✅")
 
 
 if __name__ == "__main__":
@@ -211,7 +211,6 @@ if __name__ == "__main__":
     parser.add_argument('--test-streaming', action='store_true')
     parser.add_argument('--test-remove-weight-reparam', action='store_true')
     parser.add_argument('--save-output', action='store_true')
-    parser.add_argument('--dynamo')
     
     args = parser.parse_args()
     main(args)

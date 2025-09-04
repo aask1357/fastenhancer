@@ -17,7 +17,7 @@ import scipy.io.wavfile
 
 from utils import get_hparams
 from wrapper import ModelWrapper
-from functional import ONNXSTFT, ONNXiSTFT
+from functional import ONNXSTFT
 
 
 def onnx_simplify(onnx_model):
@@ -160,7 +160,8 @@ def main(args):
         f=args.onnx_path,
         input_names=['wav_in'] + [f'cache_in_{i}' for i in range(len(cache_list))],
         output_names=['wav_out'] + [f'cache_out_{i}' for i in range(len(cache_list))],
-        dynamo=True
+        dynamo=True,
+        external_data=False,
     )
     onnx_model = onnx.load(args.onnx_path)
     onnx_model = onnx_simplify(onnx_model)
@@ -187,13 +188,9 @@ def main(args):
     cache_list = [x.numpy() for x in cache_list]
     onnx_input = {f"cache_in_{j}": x for j, x in enumerate(cache_list)}
     tic = time.perf_counter()
-    # mapping = {
-    #     output.name: idx for idx, output in enumerate(sess.get_outputs())
-    # }
     for idx in tqdm(range(0, length, hop_size)):
         onnx_input["wav_in"] = wav[:, idx:idx+n_fft]
         out = sess.run(None, onnx_input)
-        # wav_out_i = out[mapping["istft_wav_out"]]   # [batch_size=1, hop_size]
         wav_out.append(out[0][0])
         for j in range(len(out[1:])):
             onnx_input[f"cache_in_{j}"] = out[j+1]
@@ -236,7 +233,6 @@ if __name__ == "__main__":
     parser.add_argument('--test-streaming', action='store_true')
     parser.add_argument('--test-remove-weight-reparam', action='store_true')
     parser.add_argument('--save-output', action='store_true')
-    parser.add_argument('--dynamo')
     
     args = parser.parse_args()
     main(args)

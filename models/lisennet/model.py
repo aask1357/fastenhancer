@@ -436,13 +436,15 @@ class ONNXModel(nn.Module):
         cache_in_list = [*args]
         cache_out_list = []
 
-        # input processing
+        # Input compression
         mag = torch.linalg.norm(
             spec_noisy,
             dim=-1,
             keepdim=True
         ).clamp(min=1.0e-5)
         spec_noisy = spec_noisy * mag.pow(self.input_compression - 1.0)
+
+        # Input processing
         x = spec_noisy.transpose(1, 2)          # [B, T, F, 2]
         mag = torch.linalg.norm(x, dim=-1)      # [B, T, F]
         pha = torch.atan2(x[..., 1], x[..., 0]) # [B, T, F]
@@ -451,11 +453,9 @@ class ONNXModel(nn.Module):
         cache_out_list.append(pha[:, -1:, :])
         x = torch.stack([mag, gd / torch.pi, ifd / torch.pi], dim=1)    # [B, 3, T, F]
 
-        # model
+        # Model forward
         mask, *cache_out = self.model_forward(x, *cache_in_list)    # [B, F, T, 2]
         cache_out_list.extend(cache_out)
-
-        # output processing
         spec_hat = torch.stack(
             [
                 spec_noisy[..., 0] * mask[..., 0] - spec_noisy[..., 1] * mask[..., 1],
@@ -463,6 +463,14 @@ class ONNXModel(nn.Module):
             ],
             dim=3
         )
+
+        # Uncompress
+        mag_compressed = torch.linalg.norm(
+            spec_hat,
+            dim=3,
+            keepdim=True
+        )
+        spec_hat = spec_hat * mag_compressed.pow(1.0 / self.input_compression - 1.0)
         return spec_hat, *cache_out_list
 
     def remove_weight_reparameterizations(self):
