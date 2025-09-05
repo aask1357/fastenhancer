@@ -10,7 +10,7 @@ from torch.nn.utils.parametrize import is_parametrized, remove_parametrizations
 from torch import Tensor
 from torchaudio.functional import melscale_fbanks
 
-from .stft import ONNXSTFT, CompressedSTFT
+from functional import ONNXSTFT, CompressedSTFT
 
 
 class SequentialCache(nn.Sequential):

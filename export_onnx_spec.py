@@ -39,7 +39,7 @@ def main(args):
     n_fft = hps.model_kwargs.n_fft
     hop_size = hps.model_kwargs.hop_size
     win_size = hps.model_kwargs.win_size
-    hps.model = ".".join(hps.model.split(".")[:-1])
+    # hps.model = ".".join(hps.model.split(".")[:-1])
     wrapper = ModelWrapper(hps)
     wrapper.load()
     wrapper.eval()
