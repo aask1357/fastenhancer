@@ -6,9 +6,8 @@ import torch
 import torch.nn as nn
 from torch.nn import functional as F
 from torch.nn.utils.parametrizations import weight_norm as weight_norm_fn
-from torch.nn.utils.parametrize import is_parametrized, remove_parametrizations
+from torch.nn.utils.parametrize import remove_parametrizations
 from torch import Tensor
-from torchaudio.functional import melscale_fbanks
 
 from functional import ONNXSTFT, CompressedSTFT
 
@@ -65,52 +64,28 @@ class ScaledConvTranspose1d(nn.ConvTranspose1d):
         self,
         *args,
         normalize: bool = False,
-        exp_scale: bool = False,
-        final_scale_init: str = "1/sqrt(fan_in)",
         **kwargs
     ):
         super().__init__(*args, **kwargs)
         self.normalize = normalize
-        self.exp_scale = exp_scale
         self.scale = nn.Parameter(torch.ones(1))
-        if normalize:
-            if final_scale_init == "1/sqrt(fan_in)":
-                fan_in = self.in_channels * self.kernel_size[0] // self.stride[0]
-                self.scale.data.mul_(1 / math.sqrt(fan_in))
-            elif final_scale_init == "||weight||":
-                self.scale.data.fill_(self.weight.data.square().sum().sqrt())
-            elif final_scale_init == "one":
-                self.scale.data.fill_(1.0)
-            elif final_scale_init == "zero":
-                self.scale.data.fill_zero_()
-            else:
-                # mean_std
-                mean, std = final_scale_init.split('_')
-                mean, std = float(mean), float(std)
-                self.scale.data.fill_(self.weight.data.square().sum().sqrt().mul(std))
-                if self.bias is not None:
-                    self.bias.data.fill_(mean)
-        if exp_scale:
-            self.scale.data.clamp_(min=1e-5).log_()
         self.weight_norm = True
 
     def remove_weight_reparameterizations(self):
-        scale = self.scale.exp() if self.exp_scale else self.scale
         if self.normalize:
-            weight = F.normalize(self.weight, dim=(0, 1, 2)).mul_(scale)
+            weight = F.normalize(self.weight, dim=(0, 1, 2)).mul_(self.scale)
         else:
-            weight = self.weight * scale
+            weight = self.weight * self.scale
         self.weight.data.copy_(weight)
         self.weight_norm = False
         self.scale = None
 
     def forward(self, x: Tensor) -> Tensor:
         if self.weight_norm:
-            scale = self.scale.exp() if self.exp_scale else self.scale
             if self.normalize:
-                weight = F.normalize(self.weight, dim=(0, 1, 2)).mul_(scale)
+                weight = F.normalize(self.weight, dim=(0, 1, 2)).mul_(self.scale)
             else:
-                weight = self.weight * scale
+                weight = self.weight * self.scale
         else:
             weight = self.weight
         return F.conv_transpose1d(
@@ -337,64 +312,26 @@ def rf_pre_post_lin(
     bias: bool,
     sr: int = 16_000
 ) -> tp.Tuple[nn.Module, nn.Module]:
-    assert init in [None, "mel", "mel_fixed", "linear", "linear_fixed"]
+    assert init in [None, "linear", "linear_fixed"]
     pre = nn.Linear(freq, n_filter, bias=bias)
     post = nn.Linear(n_filter, freq, bias=bias)
 
     if init is None:
         return pre, post
 
-    if init in ["mel", "mel_fixed"]:
-        def hz_to_mel(freq: float) -> float:
-            return 2595.0 * math.log10(1 + freq / 700)
-
-        def mel_to_hz(mel: float) -> float:
-            return 700.0 * (math.e ** (mel / 1127) - 1)
-
-        def clip(x: int, a_min: int, a_max: int) -> int:
-            return max(min(x, a_max), a_min)
-
-        f_n = sr // 2
-        mel_max = hz_to_mel(f_n)
-        mel_fb = melscale_fbanks(
-            n_freqs=freq,
-            f_min=0.0,
-            f_max=f_n,
-            n_mels=n_filter,
-            sample_rate=sr,
-            norm='slaney',
-            mel_scale='htk'
-        ).float().transpose(0, 1) * f_n / freq     # [n_filter, freq]
-        zeros = mel_fb.new_zeros(1)
-        for idx, mfb in enumerate(mel_fb, start=0):
-            if mfb.sum().isclose(zeros):
-                idx_f = round(mel_to_hz(idx / n_filter * mel_max) * freq / f_n)
-                idx_f = clip(idx_f, 0, freq - 1)
-                mfb[idx_f] = 1.0
-
-        mel_fb_inv = torch.linalg.pinv(mel_fb)
-        for idx, mfb in enumerate(mel_fb_inv, start=0):
-            if mfb.sum().isclose(zeros):
-                idx_mel = round(hz_to_mel(idx / freq * f_n) * n_filter / mel_max)
-                idx_mel = clip(idx_mel, 0, n_filter - 1)
-                mfb[idx_mel] = 1.0
-        pre_weight = mel_fb
-        post_weight = mel_fb_inv
-
-    elif init in ["linear", "linear_fixed"]:
-        f_filter = torch.linspace(0, sr // 2, n_filter)
-        delta_f = sr // 2 / n_filter
-        f_freqs = torch.linspace(0, sr // 2, freq)
-        down = f_filter[1:, None] - f_freqs[None, :]    # [n_filter - 1, freq]
-        down = down / delta_f
-        down = F.pad(down, (0, 0, 0, 1), value=1.0)     # [n_filter, freq]
-        up = f_freqs[None, :] - f_filter[:-1, None]     # [n_filter - 1, freq]
-        up = up / delta_f
-        up = F.pad(up, (0, 0, 1, 0), value=1.0)         # [n_filter, freq]
-        pre_weight = torch.max(up.new_zeros(1), torch.min(down, up))
-        post_weight = pre_weight.transpose(0, 1)
-        pre_weight = pre_weight / pre_weight.sum(dim=1, keepdim=True)
-        post_weight = post_weight / post_weight.sum(dim=1, keepdim=True)
+    f_filter = torch.linspace(0, sr // 2, n_filter)
+    delta_f = sr // 2 / n_filter
+    f_freqs = torch.linspace(0, sr // 2, freq)
+    down = f_filter[1:, None] - f_freqs[None, :]    # [n_filter - 1, freq]
+    down = down / delta_f
+    down = F.pad(down, (0, 0, 0, 1), value=1.0)     # [n_filter, freq]
+    up = f_freqs[None, :] - f_filter[:-1, None]     # [n_filter - 1, freq]
+    up = up / delta_f
+    up = F.pad(up, (0, 0, 1, 0), value=1.0)         # [n_filter, freq]
+    pre_weight = torch.max(up.new_zeros(1), torch.min(down, up))
+    post_weight = pre_weight.transpose(0, 1)
+    pre_weight = pre_weight / pre_weight.sum(dim=1, keepdim=True)
+    post_weight = post_weight / post_weight.sum(dim=1, keepdim=True)
 
     if init.endswith("_fixed"):
         delattr(pre, "weight")
@@ -425,13 +362,10 @@ class ONNXModel(nn.Module):
         mask: tp.Optional[str] = None,
         input_compression: float = 0.3,
         weight_norm: bool = False,
-        final_scale: tp.Union[bool, str] = "exp",
-        final_scale_init: str = "1/sqrt(fan_in)",
         normalize_final_conv: bool = False,
         pre_post_init: tp.Optional[str] = None,
         resnet: bool = False,
     ):
-        assert final_scale in [True, False, "exp"]
         super().__init__()
         self.input_compression = input_compression
         self.stft = self.get_stft(n_fft, hop_size, win_size, window, stft_normalized)
@@ -537,20 +471,13 @@ class ONNXModel(nn.Module):
             self.decoder.append(module)
 
         # Decoder PostNet
-        padding = (kernel_size[0] - stride) // 2
-        if final_scale != False:
-            # out_channels = 2 = [real, imag] of the mask
-            upsample = ScaledConvTranspose1d(
-                channels, 2, kernel_size[0], stride=stride,
-                padding=padding, bias=True, exp_scale=(final_scale == "exp"),
-                normalize=normalize_final_conv,
-                final_scale_init=final_scale_init,
-            )
-        else:
-            upsample = nn.ConvTranspose1d(
-                channels, 2, kernel_size[0], stride=stride,
-                padding=padding, bias=True
-            )
+        # out_channels = 2 = [real, imag] of the mask
+        upsample = ScaledConvTranspose1d(
+            channels, 2, kernel_size[0], stride=stride,
+            bias=True,
+            padding=(kernel_size[0] - stride) // 2,
+            normalize=normalize_final_conv,
+        )
         self.dec_post = nn.Sequential(
             nn.Conv1d(channels*2, channels, 1, bias=False),
             BatchNorm(channels),
