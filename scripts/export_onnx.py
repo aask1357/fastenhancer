@@ -17,7 +17,6 @@ import scipy.io.wavfile
 
 from utils import get_hparams
 from wrapper import ModelWrapper
-from functional import ONNXSTFT
 
 
 def onnx_simplify(onnx_model):

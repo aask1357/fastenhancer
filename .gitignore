@@ -3,3 +3,4 @@ __pycache__/
 .ipynb_checkpoints/
 logs/
 delete_it*
+docs/site/
