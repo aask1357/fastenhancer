@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Training - FastEnhancer</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Training";
+        var mkdocs_page_input_path = "train/index.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> FastEnhancer
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../installation/">Installation</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../dataset/">Dataset</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="" href="../training/index.md">Training</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../metrics/">Objective Metrics</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../onnx/">ONNX</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">FastEnhancer</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Training</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="training">Training</h1>
+<p>Before you start training, make sure to <a href="../dataset/">prepare datasets</a>.  </p>
+<h2 id="training-code">Training code</h2>
+<p>Codes for training is in <code>wrappers/ns.py</code> (for Voicebank-Demand) and <code>wrappers/ns_on_the_fly.py</code> (for DNS-Challenge).<br />
+Training codes perform the following jobs.<br />
+1. For every epoch, they train a model and writes losses to the tensorboard. If <code>train.plot_params_and_grad</code> is set to true, they write parameters and gradients to the tensorboard.
+2. For every epoch, they validates and writes losses to the tensorboard.
+3. For every <code>train.save_interval</code> epochs, it saves the checkpoints.
+4. For every <code>infer.interval</code> epochs, it inferences some samples and writes audios to the tensorboard.
+5. For every <code>pesq.interval</code> epochs, it calculates objective metrics (PESQ and STOI) and writes to the tensorboard.</p>
+<p>You can set those <code>interval</code>s in <code>config/*.yaml</code> files.</p>
+<h2 id="training-recipes">Training recipes</h2>
+<ul>
+<li><a href="fastenhancer/">FastEnhancer</a></li>
+<li><a href="bsrnn/">BSRNN</a></li>
+<li><a href="fspen/">FSPEN</a></li>
+<li><a href="lisennet/">LiSenNet</a></li>
+</ul>
+<h2 id="experience-sharing">Experience sharing</h2>
+<p>Except for Voicebank-Demand at 16kHz sampling rate, we recommend not to use PESQLoss. The reasons are:<br />
+1. It harms stable training.<br />
+2. It doesn't improve other metrics so much (in VoiceBank-Demand @ 16kHz, other metrics marginally improves, so we included it in our paper).
+3. The loss includes multiple IIR filter calculations, resulting in increased training time.  </p>
+<p>In our experiments, we found that using MetricGAN instead of PESQLoss shows inferior results. MetricGAN achieved a smaller PESQ improvement than PESQLoss and degraded other objective metrics. However, these results may vary depending on the loss functions, batch size, datasets, and models.</p>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

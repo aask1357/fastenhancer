@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>DNS-Challenge Datasets - FastEnhancer</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "DNS-Challenge Datasets";
+        var mkdocs_page_input_path = "dataset/dns-challenge.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> FastEnhancer
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../installation/">Installation</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../">Dataset</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="" href="../../training/index.md">Training</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../metrics/">Objective Metrics</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../onnx/">ONNX</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">FastEnhancer</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">DNS-Challenge Datasets</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="dns-challenge-datasets">DNS-Challenge Datasets</h1>
+<p>DNS-Challenge datasets are noise suppression dataset.<br />
+- DNS-Challenge 1 (Interspeech 2020): Widebank(16kHz), 500 hours of clean speech from LibriVox audiobooks. It contains a synthetic dev test set with <code>clean</code> and <code>noisy</code> pairs that can be used for calculating intrusive objective metrics. It also contains a real recording dev test set and a blind test set that can be used for calculating non-intrusive objective metrics and subjective metrics.
+- DNS-Challenge 2 (ICASSP 2021): Wideband(16kHz), 760 hours of clean speech (singing voice, emotion data, and non-English are added).
+- DNS-Challenge 3 (Interspeech 2021): Wideband(16kHz) &amp; Fullband(48kHz).
+- DNS-Challenge 4 (ICASSP 2022): Fullband(48kHz). Personalized train dataset added.
+- DNS-Challenge 5 (ICASSP 2023): Fullband(48kHz). Headset dataset added.</p>
+<p>For 16kHz dataset, we recommend to download DNS-Challenge 3 wideband train dataset and DNS-Challenge 1 synthetic testset.<br />
+For 48kHz dataset, we recommend to download DNS-Challenge 5 speakerphone train dataset. Note that no test set with <code>clean</code> and <code>noisy</code> pairs is provided. Test sets with only <code>noisy</code> files are provided.  </p>
+<h2 id="preparing-dataset">Preparing dataset</h2>
+<h3 id="download">Download</h3>
+<p>Download the dataset from <a href="https://github.com/microsoft/DNS-Challenge/">here</a>.<br />
+For DNS-Challenge 1 synthetic dev test set, we provide a pre-processed version <a href="https://github.com/aask1357/fastenhancer/releases/tag/test-data-v1">here</a></p>
+<h3 id="downsample">Downsample</h3>
+<p>If needed, downsample the dataset using <code>scripts/resample.py</code>.<br />
+For example, if you want to downsample to 24kHz, run the code below:</p>
+<pre><code>python -m scripts.resample --to-sr 24000 --from-dir ~/Datasets/DNS_Challenge/dataset_fullband --to-dir ~/Datasets/DNS_Challenge/dataset_24khz</code></pre>
+
+<h2 id="modify-configuration-file">Modify Configuration file</h2>
+<p>You have to change the dataset path and sampling rate of configuration file.
+Since there's no official testset composed of <code>clean</code> and <code>noisy</code> pairs for fullband, you can train with DNS-Challenge dataset and validate with other dataset.
+For example, in <code>configs/fastenhancer/huge_dns.yaml</code>, we trained <code>FastEnhancer-Huge-noncausal</code> at 24kHz using DNS-Challenge dataset and validated using Voicebank-demand testset.<br />
+Modify various configurations in <code>data</code> section of the config file as you wish.<br />
+If the dataset loading is too slow, you may consider increasing <code>train.num_workers</code>. If the speed is still slow, we recommend to write a code to synthesize dataset in advance and train using the synthesized dataset.  </p>
+<h2 id="dataset-code">Dataset Code</h2>
+<p>For DNS-Challenge dataset, we load clean speech, noise, and optionally RIR. They are later mixed on-the-fly at the training code.<br />
+To check or modify the dataset code, see <code>utils/data/ns_on_the_fly.py</code>.</p>
+<h2 id="training-code">Training Code</h2>
+<p>To check or modify the training code for DNS-Challenge, see <code>wrappers/ns_on_the_fly.py</code>.
+Clean speech and noise pairs are loaded and mixed on-the-fly to generate noisy.  </p>
+<p>If you want to add RIR to clean speech, you have to modify the code.
+- <code>config.yaml</code>
+  - Set <code>data.reverb_prob</code> higher than 0 and leq than 1.
+  - Set <code>data.rir_length</code> to the max length of rir. For DNS-Challenge synthetic RIR, set it to 2 seconds (32000 for 16kHz and 96000 for 48khz).
+- <code>wrappers/ns_on_the_fly.py</code>
+  - Add <code>rir</code> to <code>self.keys</code>
+  - Load <code>batch['rir']</code>, and give it to <code>self.snr_mixer</code>.
+In this case, the rir-convolved clean speech becomes the target, which means your model doen't perform dereverberation.<br />
+If you want to do dereverberation along with noise suppression, you have to implement on your own.<br />
+Some papers preserve only the first 100ms reflections and use that as a target (GTCRN, UL-UNAS).<br />
+In URGENT challenges, they find the rir_start_index and preserve the 50ms reflections from that starting point.</p>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

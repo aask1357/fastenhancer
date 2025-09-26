@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Objective Metrics - FastEnhancer</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Objective Metrics";
+        var mkdocs_page_input_path = "metrics.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> FastEnhancer
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../installation/">Installation</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../dataset/">Dataset</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="" href="../training/index.md">Training</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Objective Metrics</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#calculating-objective-metrics">Calculating objective metrics</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../onnx/">ONNX</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">FastEnhancer</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Objective Metrics</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="objective-metrics">Objective Metrics</h1>
+<p>We support
+- DNSMOS P.808 and P.835 (SIG, BAK, OVL)
+- SCOREQ (<a href="https://github.com/alessandroragano/scoreq">github</a>)
+  - It provides two domains: Natural Speech domain trained for real recordings, and Synthetic Speech domain trained for TTS.
+  - We use Natural Speech domain.
+  - It provides two modes: no-reference (NR) and non-matching reference (NMR). NR mode is a non-intrusive mode. NMR mode takes reference and degraded signals. However, the reference doesn't have to be the clean speech pair of the degraded signal.
+  - We use full reference mode, meaning clean speech is given as the reference of the NMR mode.
+- SISDR
+  - On some implementations, mean values of reference and degraded signal are substracted. However, we don't perform mean substraction.
+- PESQ (<a href="https://github.com/ludlows/PESQ">github</a>)
+  - We use P.862.2 without Corrigendum 2. For more information, see the following <a href="https://arxiv.org/abs/2505.19760">paper</a> and <a href="https://github.com/audiolabs/PESQ">github</a>.
+- STOI and ESTOI (<a href="https://github.com/mpariente/pystoi">github</a>)
+- WER
+  - <a href="https://huggingface.co/openai/whisper-large-v3-turbo">Whisper-large-v3-turbo</a> is used.
+  - For Voicebank-Demand testset, there exists transcript, so we can calculate WER.
+  - For DNS-Challenge dev testset (Interspeech2020, synthetic), transcript is not provided. Furthermore, each clean speech is a random crop of a long audio, so the beginning and end of the speech are cut off. Therefore, it is impossible to create a transcript. We don't calculate WER for DNS-Challenge.</p>
+<h2 id="calculating-objective-metrics">Calculating objective metrics</h2>
+<p>Assume you want to calculate objective metrics for a model in <code>logs/fastenhancer_l</code>.<br />
+For Voicebank-Demand, run the following code:</p>
+<pre><code>CUDA_VISIBLE_DEVICES=0 python -m scripts.metrics_ns -n fastenhancer_l --transcript-dir PATH-TO-TRANSCRIPT</code></pre>
+<p>For DNS-Challenge, run the following code:</p>
+<pre><code>CUDA_VISIBLE_DEVICES=0 python -m scripts.metrics_ns -n fastenhancer_l --wer False</code></pre>
+<p>If you want to use cuda:1, don't set <code>-d cuda:1</code>. Set <code>CUDA_VISIBLE_DEVICES=1</code> and <code>-d cuda:0</code>.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../dataset/" class="btn btn-neutral float-left" title="Dataset"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../onnx/" class="btn btn-neutral float-right" title="ONNX">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../dataset/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../onnx/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

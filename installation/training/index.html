@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Installation for Training - FastEnhancer</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Installation for Training";
+        var mkdocs_page_input_path = "installation/training.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> FastEnhancer
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../">Installation</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../dataset/">Dataset</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="" href="../../training/index.md">Training</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../metrics/">Objective Metrics</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../onnx/">ONNX</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">FastEnhancer</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Installation for Training</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="installation-for-training">Installation for Training</h1>
+<p>We tested under:
+- PyTorch==2.7.1, CudaToolkit==11.8, Python==3.13
+- PyTorch==2.7.1, CudaToolkit==12.8, Python==3.13
+We failed under:
+- PyTorch==2.8.0
+  - We succeeded to train, calculate metrics, export ONNX spec2spec, and execute ONNXRuntime.
+  - However, we failed to export ONNX wav2wav. After downgrading to PyTorch==2.7.1, the problem is solved.</p>
+<h2 id="0-decide-python-cuda-toolkit-and-pytorch-versions">(0) Decide Python, CUDA toolkit, and PyTorch versions</h2>
+<p>Before install, you have to decide which version to install (including Python, CUDA toolkit, and PyTorch).<br />
+Note that <code>PyTorch&gt;=2.3</code> is recommended. On <code>PyTorch&lt;2.3</code>, <code>torch.nn.utils.parametrizations.weight_norm</code> is not implemented, so you have to change the codes and .yaml files. You also have to remove <code>device_id</code> argument of <code>dist.init_process_group</code> in <code>train.py</code>.  </p>
+<p>First, check CUDA toolkit versions that your nvidia driver supports:</p>
+<pre><code><span style="color: #55FF55;font-weight: bold">shahn</span>:<span style="color: #5555FF;font-weight: bold">~</span>$ nvidia-smi | grep "CUDA Version"
+| NVIDIA-SMI 580.65.06              Driver Version: 580.65.06      <span style="color: red;font-weight: bold">CUDA Version</span>: 13.0     |</code></pre>
+<p>That is the maximum CUDA toolkit version you can install. In our case, we can choose any version <code>&lt;= 13.0</code>.  </p>
+<p>Second, visit <a href="https://download.pytorch.org/whl/torch/">here</a> and decide PyTorch, Python, and CUDA toolkit version.<br />
+Then install Python to your environment.<br />
+For the rest of this document, we will use <code>torch-2.7.1+cu128-cp313</code> version, meaning PyTorch <code>2.7.1</code>, CUDA toolkit <code>12.8</code>, and Python <code>3.13</code>.<br />
+You can use your favorite environment manager. We use miniconda as below:</p>
+<pre><code>conda create -n fastenhancer python=3.13 -c conda-forge
+conda activate fastenhancer</pre>
+<p></code></p>
+<h2 id="1-install-cuda-toolkit-and-cudnn">(1) Install CUDA toolkit and cuDNN</h2>
+<p>Download a local runfile of <a href="https://developer.nvidia.com/cuda-toolkit-archive">CUDA toolkit</a> and install.<br />
+In the following example, we will install CUDA toolkit <code>12.8</code> in <code>/home/shahn/.local/cuda-12.8</code>:</p>
+<pre><code>wget https://developer.download.nvidia.com/compute/cuda/12.9.1/local_installers/cuda_12.8.1_570.124.06_linux.run
+
+chmod +x cuda_12.8.1_570.124.06_linux.run
+
+./cuda_12.8.1_570.124.06_linux.run \
+  --silent \
+  --toolkit \
+  --installpath=/home/shahn/.local/cuda-12.8 \
+  --no-opengl-libs \
+  --no-drm \
+  --no-man-page</code></pre>
+<p></code>
+Then, install a tar file of <a href="https://developer.nvidia.com/rdp/cudnn-archive">cuDNN</a> for your CUDA version. In the following example, we download cuDNN <code>8.9.7</code> for CUDA <code>12.x</code> and install as below:</p>
+<pre><code>tar xvf cudnn-linux-x86_64-8.9.7.29_cuda12-archive.tar.xz --strip-components=1 -C /home/shahn/.local/cuda-12.8</code></pre>
+
+<p>Finally, set environment variables</p>
+<pre><code>export CUDA_HOME=/home/shahn/.local/cuda-12.8
+export PATH=$CUDA_HOME/bin:$PATH
+export LD_LIBRARY_PATH=$CUDA_HOME/lib64:$CUDA_HOME/lib:$LD_LIBRARY_PATH</code></pre>
+<p>and check:</p>
+<pre><code>(fastenhancer) <span style="color: #55FF55;font-weight: bold">shahn</span>:<span style="color: #5555FF;font-weight: bold">~</span>$ which nvcc
+/home/shahn/.local/cuda-12.8/bin/nvcc
+(fastenhancer) <span style="color: #55FF55;font-weight: bold">shahn</span>:<span style="color: #5555FF;font-weight: bold">~</span>$ nvcc --version
+nvcc: NVIDIA (R) Cuda compiler driver
+Copyright (c) 2005-2025 NVIDIA Corporation
+Built on Wed_Apr__9_19:24:57_PDT_2025
+Cuda compilation tools, release 12.9, V12.9.41
+Build cuda_12.9.r12.9/compiler.35813241_0</code></pre>
+
+<h2 id="2-install-pytorch-and-torchaudio">(2) Install PyTorch and Torchaudio</h2>
+<p>Check which torchaudio version matches your PyTorch version at <a href="https://pytorch.org/audio/stable/installation.html#compatibility-matrix">here</a>.<br />
+Then install approriate version of PyTorch and Torchaudio.<br />
+In the following example, we install PyTorch <code>2.8.0</code>, CUDA <code>12.9</code> as below:</p>
+<pre><code>pip install torch==2.8.0+cu129 torchaudio==2.8.0+cu129 --index-url https://download.pytorch.org/whl</code></pre>
+
+<h2 id="3-install-other-dependencies">(3) Install other dependencies</h2>
+<pre><code>pip install jupyter notebook matplotlib tensorboard scipy librosa unidecode einops cython tqdm pyyaml pesq pystoi torch-pesq torchmetrics</code></pre>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

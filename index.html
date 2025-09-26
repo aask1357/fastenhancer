@@ -12,7 +12,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "FastEnhancer";
+        var mkdocs_page_name = "Home";
         var mkdocs_page_input_path = "index.md";
         var mkdocs_page_url = null;
       </script>
@@ -40,7 +40,7 @@
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
-                <li class="toctree-l1 current"><a class="reference internal current" href="#">FastEnhancer</a>
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Home</a>
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#contents">Contents:</a>
     </li>
@@ -48,7 +48,23 @@
                 </li>
               </ul>
               <ul>
-                <li class="toctree-l1"><a class="reference internal" href="installation/">Install</a>
+                <li class="toctree-l1"><a class="reference internal" href="installation/">Installation</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="dataset/">Dataset</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="" href="training/index.md">Training</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="metrics/">Objective Metrics</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="onnx/">ONNX</a>
                 </li>
               </ul>
       </div>
@@ -65,7 +81,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">FastEnhancer</li>
+      <li class="breadcrumb-item active">Home</li>
     <li class="wy-breadcrumbs-aside">
     </li>
   </ul>
@@ -75,20 +91,42 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="fastenhancer">FastEnhancer</h1>
-<p><a href="https://github.com/aask1357/fastenhancer">github</a> [paper].</p>
+<p><a href="https://github.com/aask1357/fastenhancer">github</a> | <a href="">paper</a>.</p>
 <h2 id="contents">Contents:</h2>
 <ul>
-<li>Install</li>
-<li>Install for training</li>
-<li>Install for ONNX inference</li>
-<li>Train</li>
-<li>ONNX inference</li>
+<li><a href="installation/">Installation</a><ul>
+<li><a href="installation/#installation-for-all-features">Installation for all features</a></li>
+<li><a href="installation/training/">Installation for training</a></li>
+<li><a href="installation/#Installation-for-calculating-objective-metrics">Installation for calculating objective metrics</a></li>
+<li><a href="installation/#Installation-for-ONNX-exporting">Installation for ONNX exporting</a></li>
+<li><a href="installation/#Installation-for-ONNXRuntime-(spec2spec-version)">Installation for ONNXRuntime (spec2spec version)</a></li>
+<li><a href="installation/#Installation-for-ONNXRuntime-(wav2wav-version)">Installation for ONNXRuntime (wav2wav version)</a></li>
+</ul>
+</li>
+<li><a href="train/">Training</a><ul>
+<li><a href="train/#Training-code">Training code</a></li>
+<li><a href="train/#Training-recipes">Training recipes</a><ul>
+<li><a href="train/fastenhancer/">FastEnhancer</a></li>
+<li><a href="train/bsrnn/">BSRNN</a></li>
+<li><a href="train/fspen/">FSPEN</a></li>
+<li><a href="train/lisennet/">LiSenNet</a></li>
+</ul>
+</li>
+<li><a href="train/#Experience-sharing">Experience sharing</a></li>
+</ul>
+</li>
+<li><a href="metrics/">Calculating objevtice metrics</a></li>
+<li><a href="onnx/">ONNXRuntime</a><ul>
+<li><a href="onnx/#exporting-to-onnx-and-executing-onnxruntime">Exporting to ONNX and executing ONNXRuntime</a></li>
+<li><a href="onnx/#executing-onnxruntime">Executing ONNXRuntime</a></li>
+</ul>
+</li>
 </ul>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="installation/" class="btn btn-neutral float-right" title="Install">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="installation/" class="btn btn-neutral float-right" title="Installation">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -132,5 +170,5 @@
 
 <!--
 MkDocs version : 1.6.1
-Build Date UTC : 2025-09-18 07:25:38.109975+00:00
+Build Date UTC : 2025-09-26 04:56:16.298215+00:00
 -->

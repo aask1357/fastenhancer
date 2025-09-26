@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Voicebank-Demand Dataset - FastEnhancer</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Voicebank-Demand Dataset";
+        var mkdocs_page_input_path = "dataset/voicebank-demand.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> FastEnhancer
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../installation/">Installation</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../">Dataset</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="" href="../../training/index.md">Training</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../metrics/">Objective Metrics</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../onnx/">ONNX</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">FastEnhancer</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Voicebank-Demand Dataset</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="voicebank-demand-dataset">Voicebank-Demand Dataset</h1>
+<p>Voicebank-Demand, also known as VCTK-Demand, is a noise suppression dataset with a sampling rate of 48kHz.<br />
+There are two train datasets: one is a 28-speaker version, and the other is a 56-speaker version.<br />
+In many papers, including ours, the 28-speaker version is used.  </p>
+<h2 id="preparing-dataset">Preparing dataset</h2>
+<h3 id="download">Download</h3>
+<p>Download the train data, test data, and logfiles from <a href="https://datashare.ed.ac.uk/handle/10283/2791">here</a>.<br />
+Download a trainscript file of the testset from <a href="https://github.com/aask1357/fastenhancer/releases/tag/test-data-v1">here</a>.</p>
+<h3 id="downsample">Downsample</h3>
+<p>If needed, downsample the dataset using <code>scripts/resample.py</code>.<br />
+For example, if you want to downsample to 16kHz, run the code below:</p>
+<pre><code>python -m scripts.resample --to-sr 16000 --from-dir ~/Datasets/voicebank-demand/48k --to-dir ~/Datasets/voicebank-demand/16k</code></pre>
+<p>After downloading, the directory may look like this:</p>
+<pre><code>voicebank-demand
+├─ 16k
+|  ├─ clean_testset_wav
+|  ├─ clean_trainset_28spk_wav
+|  ├─ noisy_testset_wav
+|  └─ noisy_trainset_28spk_wav
+├─ 48k
+|  ├─ clean_testset_wav
+|  ├─ clean_trainset_28spk_wav
+|  ├─ noisy_testset_wav
+|  └─ noisy_trainset_28spk_wav
+└─ logfiles
+   ├─ log_readme.txt
+   ├─ log_testset.txt
+   ├─ log_trainset_28spk.txt
+   └─ transcript_testset.txt</code></pre>
+
+<h2 id="modify-configuration-file">Modify Configuration file</h2>
+<p>You have to change the dataset path and sampling rate of configuration file.
+For example, to train FastEnhancer-B, change <code>data</code> section in <code>configs/fastenhancer/b.yaml</code>.</p>
+<h2 id="dataset-code">Dataset Code</h2>
+<p>For Voicebank-demand dataset, we load clean and noisy speech pairs.<br />
+To check or modify the dataset code, see <code>utils/data/voicebank_demand.py</code>.</p>
+<h2 id="training-code">Training Code</h2>
+<p>To check or modify the training code for Voicebank-Demand, see <code>wrappers/ns.py</code>.<br />
+Clean and noisy pairs are loaded for training.</p>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

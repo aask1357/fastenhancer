@@ -5,15 +5,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Install - FastEnhancer</title>
+    <title>Installation - FastEnhancer</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Install";
-        var mkdocs_page_input_path = "installation.md";
+        var mkdocs_page_name = "Installation";
+        var mkdocs_page_input_path = "installation/index.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -40,17 +40,41 @@
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
-                <li class="toctree-l1"><a class="reference internal" href="..">FastEnhancer</a>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
                 </li>
               </ul>
               <ul class="current">
-                <li class="toctree-l1 current"><a class="reference internal current" href="#">Install</a>
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Installation</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#install-for-training">Install for training</a>
+    <li class="toctree-l2"><a class="reference internal" href="#installation-for-all-features">Installation for all features</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#install-for-onnxruntime-inference">Install for ONNXRuntime inference</a>
+    <li class="toctree-l2"><a class="reference internal" href="#minimal-installation-for-training">Minimal installation for training</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#minimal-installation-for-calculating-objective-metrics">Minimal installation for calculating objective metrics</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#minimal-installation-for-onnx-exporting">Minimal installation for ONNX exporting</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#minimal-installation-for-onnxruntime-spec2spec-version">Minimal Installation for ONNXRuntime (spec2spec version)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#minimal-installation-for-onnxruntime-wav2wav-version">Minimal Installation for ONNXRuntime (wav2wav version)</a>
     </li>
     </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../dataset/">Dataset</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="" href="../training/index.md">Training</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../metrics/">Objective Metrics</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../onnx/">ONNX</a>
                 </li>
               </ul>
       </div>
@@ -67,7 +91,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Install</li>
+      <li class="breadcrumb-item active">Installation</li>
     <li class="wy-breadcrumbs-aside">
     </li>
   </ul>
@@ -76,24 +100,55 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="install">Install</h1>
-<h2 id="install-for-training">Install for training</h2>
-<ol>
-<li>Install CUDA toolkit and cuDNN</li>
-<li>Install torch and torchaudio</li>
-<li>Install requirements</li>
-<li>Install ONNXRuntime-GPU</li>
-</ol>
-<h2 id="install-for-onnxruntime-inference">Install for ONNXRuntime inference</h2>
-<ol>
-<li>Install requirements</li>
-<li>Install ONNXRuntime</li>
-</ol>
+                <h1 id="installation">Installation</h1>
+<h2 id="installation-for-all-features">Installation for all features</h2>
+<p>First, follow <a href="training/">Installation for Training</a>.<br />
+Second, install the following packages:</p>
+<pre><code>pip install torchmetrics jiwer onnx onnxsim onnxscript
+pip install git+https://github.com/openai/whisper.git</code></pre>
+<p>Third, install <a href="https://onnxruntime.ai/docs/install/#python-installs">onnxruntime-gpu</a>.<br />
+Make sure to install the version that matches your CUDA version.<br />
+If you cannot install the GPU version, you can install the CPU version instead.<br />
+However, DNSMOS and SCOREQ will run on CPU and the <code>metrics_ns.py</code> code will run very slow.</p>
+<h2 id="minimal-installation-for-training">Minimal installation for training</h2>
+<p>Required by <code>train.py</code> and <code>train_torchrun.py</code>.  </p>
+<p>Refer to <a href="training/">Installation for Training</a>.</p>
+<h2 id="minimal-installation-for-calculating-objective-metrics">Minimal installation for calculating objective metrics</h2>
+<p>Required by <code>metrics_ns.py</code>.  </p>
+<p>First, follow <a href="training/">Installation for Training</a>.<br />
+Second, install the following pacakges:</p>
+<pre><code>pip install torchmetrics jiwer
+pip install git+https://github.com/openai/whisper.git</code></pre>
+<p>Finally, install <a href="https://onnxruntime.ai/docs/install/#python-installs">onnxruntime-gpu</a>.<br />
+Make sure to install the version that matches your CUDA version.<br />
+If you cannot install the GPU version, you can install the CPU version instead.<br />
+However, DNSMOS and SCOREQ will run on CPU and the <code>metrics_ns.py</code> code will run very slow.</p>
+<h2 id="minimal-installation-for-onnx-exporting">Minimal installation for ONNX exporting</h2>
+<p>Required by <code>scripts/export_onnx.py</code> and <code>scripts/export_onnx_spec.py</code>.  </p>
+<p>First, follow <a href="training/">Installation for Training</a>.<br />
+Second, install the following pacakges:</p>
+<pre><code>pip install onnx onnxsim onnxscript</code></pre>
+
+<h2 id="minimal-installation-for-onnxruntime-spec2spec-version">Minimal Installation for ONNXRuntime (spec2spec version)</h2>
+<p>Required by <code>scripts/test_onnx_spec.py</code>.  </p>
+<p>First, install <a href="https://pytorch.org/get-started/locally/">PyTorch</a>. It doesn't need to be GPU version.<br />
+Second, install the following pacakges:</p>
+<pre><code>pip install numpy scipy librosa tqdm</code></pre>
+<p>Finally, install install <a href="https://onnxruntime.ai/docs/install/#python-installs">onnxruntime</a>.<br />
+It doesn't matter whether you intsall a CPU version or a GPU version. Even if you install a GPU version, the code will run on CPU anyway.</p>
+<h2 id="minimal-installation-for-onnxruntime-wav2wav-version">Minimal Installation for ONNXRuntime (wav2wav version)</h2>
+<p>Required by <code>scripts/test_onnx.py</code>.  </p>
+<p>You don't need to install PyTorch in this case.
+First, install the following pacakges:</p>
+<pre><code>pip install numpy scipy librosa tqdm</code></pre>
+<p>Then install install <a href="https://onnxruntime.ai/docs/install/#python-installs">onnxruntime</a>.<br />
+It doesn't matter whether you intsall a CPU version or a GPU version. Even if you install a GPU version, the code will run on CPU anyway.</p>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href=".." class="btn btn-neutral float-left" title="FastEnhancer"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href=".." class="btn btn-neutral float-left" title="Home"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../dataset/" class="btn btn-neutral float-right" title="Dataset">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -118,6 +173,8 @@
     
       <span><a href=".." style="color: #fcfcfc">&laquo; Previous</a></span>
     
+    
+      <span><a href="../dataset/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
