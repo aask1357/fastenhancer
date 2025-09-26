@@ -104,6 +104,32 @@ Training codes perform the following jobs.<br />
 <li><a href="fspen/">FSPEN</a></li>
 <li><a href="lisennet/">LiSenNet</a></li>
 </ul>
+<h2 id="cleaning-checkpoints">Cleaning checkpoints</h2>
+<p>After training, many checkpoints are generated. In most cases, we only need the last one. If you want to remove all the checkpoints except the last one, This section is for you.<br />
+Suppose the log directory looks like this:</p>
+<pre><code>logs
+├─ vbd
+|  ├─ fastenhancer_b
+|  |  ├─ 00020.pth
+|  |  ├─ ...
+|  |  ├─ 00480.pth
+|  |  └─ 00500.pth
+|  └─ fastenhancer_t
+|     ├─ 00020.pth
+|     ├─ ...
+|     ├─ 00480.pth
+|     └─ 00500.pth
+└─ dns
+   └─ fastenhancer_b
+      ├─ 00020.pth
+      ├─ ...
+      ├─ 00480.pth
+      └─ 00500.pth</code></pre>
+<p>If you want to delete all checkpoints except the last one in <code>logs/vbd</code>, run the following code:</p>
+<pre><code>python scripts/clean_checkpoints.py -n vbd --delete</code></pre>
+<p>If you just want to check how many checkpoints you can delete, instead of actually deleting them, run without the <code>--delete</code> flag:</p>
+<pre><code>python scripts/clean_checkpoints.py -n vbd</code></pre>
+
 <h2 id="experience-sharing">Experience sharing</h2>
 <p>Except for Voicebank-Demand at 16kHz sampling rate, we recommend not to use PESQLoss. The reasons are:<br />
 1. It harms stable training.<br />
