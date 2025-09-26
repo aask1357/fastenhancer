@@ -18,7 +18,7 @@
         * [BSRNN](train/bsrnn.md)
         * [FSPEN](train/fspen.md)
         * [LiSenNet](train/lisennet.md)
-    * [Tips for training](train/index.md#Tips-for-training)
+    * [Experience sharing](train/index.md#Experience-sharing)
 * [Calculating objevtice metrics](metrics.md)
 * [ONNXRuntime](onnx.md)
     * [Exporting to ONNX and executing ONNXRuntime](onnx.md#exporting-to-onnx-and-executing-onnxruntime)

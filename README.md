@@ -1,5 +1,5 @@
 # Introduction
-Official repository of "FastEnhancer: Speed-Optimized Streaming Neural Speech Enhancement."
+Official repository of "FastEnhancer: Speed-Optimized Streaming Neural Speech Enhancement."  
 [Paper]() | [Documentation](https://aask1357.github.io/fastenhancer/)
 # Install
 Please refer to [document](https://aask1357.github.io/fastenhancer/installation).
@@ -11,48 +11,20 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/dataset).
 Please refer to [document](https://aask1357.github.io/fastenhancer/train).
 
 # Inference
-## PyTorch
+## PyTorch Inference
 Download link for the pytorch checkpoints and tensorboard logs will be provided soon.  
 Please refer to [document](https://aask1357.github.io/fastenhancer/metrics) for calculating objective metrics.  
-## ONNX
+## ONNXRuntime Inference
 Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for streaming inference using ONNXRuntime. 
 
 # Results
 ## Voicebank-Demand 16kHz
-<style>
-  .my-table {
-    border-collapse: collapse;
-    /* width: 100%; */
-    /* font-size: 14px; */
-    background-color: #ffffff;
-  }
-  .my-table th, .my-table td {
-    border: 1px solid #D1D9E0; /* 테두리 색상 */
-    /* padding: 8px 12px; */
-    text-align: center;
-    color: black;
-  }
-  .my-table th {
-    font-weight: bold;
-  }
-  .my-table tbody tr:nth-child(odd) {
-    background-color: #F6F8FA;
-  }
-  .my-table td:first-child {
-    font-family: monospace;
-    border-right: 2px solid #888;
-  }
-  .my-table tr.divider td {
-    border-top: 2px solid #888;
-  }
-</style>
 
-<p align="center"><b>Table 1.</b> Performance on Voicebank-Demand.</p>
-
-<table class="my-table">
+<p align="center"><b>Table 1.</b> Performance on Voicebank-Demand testset.</p>
+<table>
   <thead>
     <tr>
-      <th rowspan="2" style="border-right:2px solid #888">Model</th>
+      <th rowspan="2">Model</th>
       <th rowspan="2">Para.<br>(K)</th>
       <th rowspan="2">MACs</th>
       <th rowspan="2">RTF<br>(Xeon)</th>
@@ -66,14 +38,14 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
       <th rowspan="2">ESTOI</th>
       <th rowspan="2">WER</th>
     </tr>
-    <tr class="divider">
+    <tr>
       <th>SIG</th>
       <th>BAK</th>
       <th>OVL</th>
     </tr>
   </thead>
-  <tbody>
-    <tr class="divider">
+  <tbody align=center>
+    <tr>
       <td>GTCRN<sup>a</sup></td>
       <td><strong>24</strong></td>
       <td><strong>40M</strong></td>
@@ -159,7 +131,7 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
       <td>3.4</td>
     </tr>
     <tr>
-      <td>FastEnhancer-B</td>
+      <td><i>FastEnhancer</i>_B</td>
       <td>92</td>
       <td>262M</td>
       <td><strong>0.022</strong></td>
@@ -175,8 +147,9 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
       <td><strong>0.861</strong></td>
       <td><strong>3.2</strong></td>
     </tr>
-    <tr class="divider">
-      <td>FastEnhancer-T</td>
+    <tr><td colspan=15></td></tr>
+    <tr>
+      <td><i>FastEnhancer</i>_T</td>
       <td><strong>22</strong></td>
       <td><strong>55M</strong></td>
       <td><strong>0.012</strong></td>
@@ -193,7 +166,7 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
       <td>3.6</td>
     </tr>
     <tr>
-      <td>FastEnhancer-B</td>
+      <td><i>FastEnhancer</i>_B</td>
       <td>92</td>
       <td>262M</td>
       <td>0.022</td>
@@ -210,7 +183,7 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
       <td>3.2</td>
     </tr>
     <tr>
-      <td>FastEnhancer-S</td>
+      <td><i>FastEnhancer</i>_S</td>
       <td>195</td>
       <td>664M</td>
       <td>0.034</td>
@@ -227,7 +200,7 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
       <td>3.2</td>
     </tr>
     <tr>
-      <td>FastEnhancer-M</td>
+      <td><i>FastEnhancer</i>_M</td>
       <td>492</td>
       <td>2.9G</td>
       <td>0.101</td>
@@ -244,7 +217,7 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
       <td><strong>2.8</strong>
     </tr>
     <tr>
-      <td>FastEnhancer-L</td>
+      <td><i>FastEnhancer</i>_L</td>
       <td>1105</td>
       <td>11G</td>
       <td>0.313</td>

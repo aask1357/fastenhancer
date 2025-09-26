@@ -18,7 +18,7 @@ You can set those `interval`s in `config/*.yaml` files.
 - [FSPEN](fspen.md)
 - [LiSenNet](lisennet.md)
 
-## Experience sharing for training
+## Experience sharing
 Except for Voicebank-Demand at 16kHz sampling rate, we recommend not to use PESQLoss. The reasons are:  
 1. It harms stable training.  
 2. It doesn't improve other metrics so much (in VoiceBank-Demand @ 16kHz, other metrics marginally improves, so we included it in our paper).
