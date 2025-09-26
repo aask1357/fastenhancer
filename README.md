@@ -171,7 +171,7 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
       <td>262M</td>
       <td>0.022</td>
       <td>0.026</td>
-      <td><strong>3.47</strong></td>
+      <td>3.47</td>
       <td>3.38</td>
       <td>4.02</td>
       <td>3.10</td>
