@@ -69,7 +69,6 @@ def main(args):
         print(f"{prefix}#params: {n_params/1000} K")
 
     print_num_params(wrapper.model)
-    # exit()
 
     # Load the dataset
     hps.pesq.batch_size = args.batch_size
@@ -109,7 +108,7 @@ def main(args):
         normalizer = EnglishTextNormalizer()
 
     # Calculate metrics
-    dnsmos_total, scoreq_total, sisnr_total, pesq_total, stoi_total, estoi_total = 0, 0, 0, 0, 0, 0
+    dnsmos_total, scoreq_total, sisdr_total, pesq_total, stoi_total, estoi_total = 0, 0, 0, 0, 0, 0
     wer_total = 0
     num_total = 0
 
@@ -131,9 +130,9 @@ def main(args):
             wav_clean_hat, _ = wrapper.model(wav_noisy)
         wav_clean_hat = wav_clean_hat * mask
 
-        # SISNR
+        # SISDR
         result = si_snr(wav_clean_hat, wav_clean, mask)
-        sisnr_total += result.sum()
+        sisdr_total += result.sum()
 
         # Resampling
         wav_clean_10khz = resampler10khz(wav_clean).cpu().numpy()
@@ -186,13 +185,13 @@ def main(args):
             num_total += 1
             print(
                 f"\r({num_total}/{len(dataloader.dataset)}) "
-                "[p808_mos, sig, bak, ovr, scoreq, sisnr, pesq, stoi, estoi, wer]: "
+                "[p808_mos, sig, bak, ovr, scoreq, sisdr, pesq, stoi, estoi, wer]: "
                 f"{dnsmos_total[0] / num_total:.2f}, "
                 f"{dnsmos_total[1] / num_total:.2f}, "
                 f"{dnsmos_total[2] / num_total:.2f}, "
                 f"{dnsmos_total[3] / num_total:.2f}, "
                 f"{scoreq_total / num_total:.3f}, "
-                f"{sisnr_total / num_total:.1f}, "
+                f"{sisdr_total / num_total:.1f}, "
                 f"{pesq_total / num_total:.2f}, "
                 f"{stoi_total / num_total:.1f}, "
                 f"{estoi_total / num_total:.1f}, "
@@ -202,7 +201,7 @@ def main(args):
     out = f"\n{args.name}: "
     for score in (
         dnsmos_total[0], dnsmos_total[1], dnsmos_total[2],
-        dnsmos_total[3], scoreq_total, sisnr_total, pesq_total,
+        dnsmos_total[3], scoreq_total, sisdr_total, pesq_total,
         stoi_total, estoi_total,
     ):
         out = f"{out}{score / num_total:.6f}, "
@@ -221,18 +220,12 @@ if __name__ == "__main__":
         "-d", "--device",
         type=str,
         default="cuda:0",
-        help="Device for running ASR inference. cpu | cuda:0 | cuda:1 | ...",
+        help="Device for running ASR inference. cpu | cuda:0.",
     )
     parser.add_argument(
         "-e", "--epoch",
         type=int,
         help="Epoch of the model checkpoint",
-    )
-    parser.add_argument(
-        "--dataset",
-        type=str,
-        default="voicebank-demand",
-        help="Dataset name",
     )
     parser.add_argument(
         "-b", "--batch_size",
@@ -244,6 +237,7 @@ if __name__ == "__main__":
         "--transcript-dir",
         type=str,
         default="/home/shahn/Datasets/voicebank-demand/logfiles/transcript_testset.txt",
+        help="Path to the transcript file for the testset. Not used if --wer is False.",
     )
     parser.add_argument(
         "--num-threads",

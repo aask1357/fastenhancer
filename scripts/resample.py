@@ -1,6 +1,6 @@
 import os
 import argparse
-from pathlib import Path, PosixPath
+from pathlib import Path
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
 import librosa
@@ -10,9 +10,9 @@ from tqdm import tqdm
 
 
 def resample(
-    from_dir: PosixPath,
-    to_dir: PosixPath,
-    from_file: PosixPath,
+    from_dir: Path,
+    to_dir: Path,
+    from_file: Path,
     sr: int,
     to_extension: str
 ) -> int:

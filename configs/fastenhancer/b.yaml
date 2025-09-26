@@ -24,11 +24,10 @@ model_kwargs:
     activation_kwargs:
         inplace: True
     input_compression: 0.3
-    final_scale: True
     normalize_final_conv: True
-    final_scale_init: "one"
     weight_norm: True
     resnet: False
+wrapper: ns
 data:
     dataset: VoiceBank-Demand
     train:
@@ -85,6 +84,7 @@ train:
         weight_decay: 0.01  # normal weights -> 1e-2
         wd_ratio: 1.0       # scale-invariant weights -> 1e-2
         betas: [0.95, 0.999]
+        projection: auto
     optimizer_groups:
         -
             regex_list:     # regular expressions of parameter names

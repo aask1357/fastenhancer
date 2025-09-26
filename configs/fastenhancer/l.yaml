@@ -25,13 +25,11 @@ model_kwargs:
     activation_kwargs:
         inplace: True
     input_compression: 0.3
-    final_scale: True
     normalize_final_conv: True
-    final_scale_init: "one"
     weight_norm: True
     resnet: False
 data:
-    dataset: VoiceBank-Demand
+    dataset: NoiseSuppression
     train:
         clean_dir: "/home/shahn/Datasets/voicebank-demand/16k/clean_trainset_28spk_wav"
         noisy_dir: "/home/shahn/Datasets/voicebank-demand/16k/noisy_trainset_28spk_wav"
@@ -67,7 +65,7 @@ train:
     persistent_workers: True
     clip_grad: null
     seed: 1
-    plot_param_and_grad: True
+    plot_param_and_grad: False
     losses:
         mag_mse:
             weight: 0.3
@@ -86,6 +84,7 @@ train:
         weight_decay: 0.01  # normal weights -> 1e-2
         wd_ratio: 1.0       # scale-invariant weights -> 1e-2
         betas: [0.95, 0.999]
+        projection: auto
     optimizer_groups:
         -
             regex_list:     # regular expressions of parameter names

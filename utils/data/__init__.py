@@ -6,7 +6,8 @@ import torch
 from torch.utils.data import DataLoader, Dataset as TorchDataset
 from torch.utils.data.distributed import DistributedSampler
 
-from .voicebank_demand import VBDDataset, collate
+from .noise_suppression import NSDataset, collate
+from .ns_on_the_fly import NSOnTheFlyDataset
 
 from utils import HParams
 
@@ -26,16 +27,18 @@ def get_dataset_dataloader(
     rank: int = 0,
 ) -> tp.Tuple[TorchDataset, DataLoader]:
     _collate = None
-    dataset = hps.data.dataset
+    dataset = hps["data"]["dataset"]
     if isinstance(dataset, HParams) or isinstance(dataset, dict):
         dataset = dataset[mode]
 
-    if dataset == "VoiceBank-Demand":
-        _Dataset, _collate = VBDDataset, collate
+    if dataset == "NoiseSuppression":
+        _Dataset, _collate = NSDataset, collate
+    elif dataset == "NoiseSuppressionOnTheFly":
+        _Dataset = NSOnTheFlyDataset
     else:
         raise ValueError(f"Unknown dataset: {dataset}")
 
-    hp = hps.train
+    hp = hps["train"]
     batch_size = getattr(hp, "batch_size", -1)
     num_workers = getattr(hp, "num_workers", -1)
     drop_last = getattr(hp, f"drop_last", False)
@@ -51,8 +54,8 @@ def get_dataset_dataloader(
         num_workers = getattr(hp_infer, "num_workers", 0)     # Since we don't infer many samples at once, set num_workers=0
         drop_last = False
         # set segment_size to None
-        segment_size = getattr(hps.data, "segment_size", None)
-        hps.data["segment_size"] = None
+        segment_size = getattr(hps["data"], "segment_size", None)
+        hps["data"]["segment_size"] = None
     elif mode == "pesq":
         hp_pesq = getattr(hps, "pesq", {})
         batch_size = getattr(hp_pesq, "batch_size", getattr(hp, "pesq_batch_size", -1))
@@ -60,12 +63,12 @@ def get_dataset_dataloader(
         drop_last = False
         persistent_workers = getattr(hp_pesq, "persistent_worker", persistent_workers)
         # set segment_size to None
-        segment_size = getattr(hps.data, "segment_size", None)
-        hps.data["segment_size"] = None
+        segment_size = getattr(hps["data"], "segment_size", None)
+        hps["data"]["segment_size"] = None
     elif mode != "train":
         raise ValueError(f"Unknown dataset mode: {mode}")
 
-    dataset = _Dataset(hps.data, keys, textprocessor=textprocessor,
+    dataset = _Dataset(hps["data"], keys, textprocessor=textprocessor,
                        mode=mode, batch_size=batch_size*n_gpus, verbose=(rank==0))
     sampler = DistributedSampler(
         dataset, num_replicas=n_gpus, rank=rank, shuffle=False,
@@ -79,6 +82,6 @@ def get_dataset_dataloader(
 
     if mode == "pesq" or mode == "infer":
         # restore segment_size, in case of using segment_size in other modes
-        hps.data["segment_size"] = segment_size
+        hps["data"]["segment_size"] = segment_size
 
     return dataset, dataloader

@@ -1,2 +1,9 @@
 site_name: FastEnhancer
 theme: readthedocs
+nav:
+    - Home: index.md
+    - Installation: installation/index.md
+    - Dataset: dataset/index.md
+    - Training: training/index.md
+    - Objective Metrics: metrics.md
+    - ONNX: onnx.md

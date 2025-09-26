@@ -57,7 +57,7 @@ def get_snr(metadata_path: str) -> Dict[str, float]:
     return data
 
 
-class VBDDataset(torch.utils.data.Dataset):
+class NSDataset(torch.utils.data.Dataset):
     def __init__(self, hp, keys=None, textprocessor=None, mode="train",
                  batch_size=1, verbose=False):
         super().__init__()

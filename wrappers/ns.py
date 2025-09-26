@@ -26,7 +26,7 @@ from utils.measure_metrics import Metrics
 from losses import Losses
 
 
-def get_model(hps : str) -> torch.nn.Module:
+def get_model(hps) -> torch.nn.Module:
     model: str = hps.model
     module = importlib.import_module(f"models.{model}.model")
     return module.Model(**hps.model_kwargs)
@@ -40,8 +40,9 @@ class ModelWrapper:
         self.train_mode: bool = train
         self.device = device
         self.epoch: int = 0
-        self.keys = ["clean", "noisy"]
-        self.infer_keys = self.keys
+        self.keys = []
+        self.infer_keys = []
+        self.set_keys()
 
         self.h = hps.data
         self.hop_size = hps.model_kwargs.hop_size
@@ -112,8 +113,8 @@ class ModelWrapper:
         '''set self.keys, self.infer_keys
         self.keys: used for train_dataset & valid_dataset
         self.infer_keys: used for infer_dataset'''
-        self.keys = None
-        self.infer_keys = None
+        self.keys = ["clean", "noisy"]
+        self.infer_keys = self.keys
     
     def plot_initial_param(self, dataloader: DataLoader) -> dict:
         hists = {}
@@ -126,12 +127,6 @@ class ModelWrapper:
     def to(self, device):
         self.device = device
         self.model.to(device)
-    
-    def train(self):
-        self.model.train()
-    
-    def eval(self):
-        self.model.eval()
 
     def train_epoch(self, dataloader):
         self.train()
@@ -310,12 +305,12 @@ class ModelWrapper:
             print(f"Loading checkpoint file '{path}'...")
         return checkpoint
 
-    def load(self, epoch: Optional[int] = None, path: Optional[str] = None):
+    def load(self, epoch: Optional[int] = None, path: Optional[str] = None, strict: bool = True):
         checkpoint = self.get_checkpoint(epoch, path)
         if checkpoint is None:
             return
 
-        self._module.load_state_dict(checkpoint['model'], strict=True)
+        self._module.load_state_dict(checkpoint['model'], strict=strict)
         self.epoch = checkpoint['epoch']
 
         if self.train_mode:

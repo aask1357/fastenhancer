@@ -4,3 +4,4 @@ __pycache__/
 logs/
 delete_it*
 docs/site/
+*.onnx

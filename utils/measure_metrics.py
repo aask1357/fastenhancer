@@ -1,6 +1,6 @@
 from concurrent.futures import ProcessPoolExecutor, as_completed
 import math
-from typing import Dict, Tuple, Optional
+from typing import Dict, Tuple, Optional, Union, List, Any
 
 import torch
 from torchaudio.transforms import Resample
@@ -63,7 +63,12 @@ class Metrics:
         self.executor = ProcessPoolExecutor(max_workers=self.num_workers)
         self.num_items = 0
 
-    def submit(self, ref: Tensor, deg: Tensor, wav_lens: Optional[Tensor] = None) -> None:
+    def submit(
+        self,
+        ref: Tensor,
+        deg: Tensor,
+        wav_lens: Optional[Union[Tensor, List[Any]]] = None
+    ) -> None:
         """ref/deg: [B, 1, T] or [B, T]"""
         assert self.executor is not None
         batch_size = ref.size(0)
@@ -92,7 +97,6 @@ class Metrics:
                     wav_len = int(wav_lens[i] * sr / self.sr)
                     ref_i = ref_i[:wav_len]
                     deg_i = deg_i[:wav_len]
-                breakpoint()
                 if name == "pesq":
                     future = self.executor.submit(measure_pesq, 16000, ref_i, deg_i, "wb")
                     state["futures"].append(future)

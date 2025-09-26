@@ -2,7 +2,6 @@ import time
 import argparse
 
 import numpy as np
-import torch
 import onnxruntime
 import librosa
 from tqdm import tqdm
@@ -13,11 +12,11 @@ def main(args):
     # Load input
     print("Preparing input...", end=" ")
     wav, _ = librosa.load(args.audio_path, sr=16_000)
-    wav = torch.from_numpy(wav).view(1, -1).clamp(min=-1, max=1)
-    wav = torch.cat([wav] * 8, dim=1)
-    length = wav.size(-1) // args.hop_size * args.hop_size
-    wav = wav[:, :length]
-    wav = torch.nn.functional.pad(wav, (args.n_fft-args.hop_size, 0))     # pad left
+    wav = wav.reshape(1, -1)
+    wav = np.clip(wav, a_min=-1, a_max=1)
+    wav = np.concatenate([wav] * 8, axis=1)
+    length = wav.shape[-1]
+    wav = np.pad(wav, ((0, 0), (0, args.n_fft)), mode='constant')  # pad right
 
     # Create an ONNXRuntime session
     print("✅\nCreating a ONNXRuntime session...", end=" ")
@@ -33,7 +32,6 @@ def main(args):
     )
 
     # Prepare cache
-    print([(x.name, x.shape) for x in sess.get_inputs()])
     onnx_input = {
         x.name: np.zeros(x.shape, dtype=np.float32)
         for x in sess.get_inputs()
@@ -43,10 +41,9 @@ def main(args):
     # Inference
     print("✅\nInferencing...")
     wav_out = []
-    wav = wav.numpy()
     tic = time.perf_counter()
-    for idx in tqdm(range(0, length, args.hop_size)):
-        onnx_input["wav_in"] = wav[:, idx:idx+args.n_fft]
+    for idx in tqdm(range(0, length+args.n_fft-args.hop_size, args.hop_size)):
+        onnx_input["wav_in"] = wav[:, idx:idx+args.hop_size]
         out = sess.run(None, onnx_input)
         wav_out.append(out[0][0])
         for j in range(len(out[1:])):
@@ -57,6 +54,8 @@ def main(args):
     if args.save_output:
         print("Saving the output audio...", end=" ")
         wav_out = np.concatenate(wav_out, axis=0)
+        start_idx = args.n_fft - args.hop_size
+        wav_out = wav_out[start_idx:start_idx+length]
         wav_out = np.clip(wav_out, a_min=-1.0, a_max=1.0)
         scipy.io.wavfile.write("onnx/delete_it_onnx.wav", 16_000, wav_out)
         print("✅")
@@ -65,13 +64,13 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
+        '--onnx-path', type=str, required=True,
+        help="Path to save exported onnx file."
+    )
+    parser.add_argument(
         '--audio-path', type=str,
         default="onnx/p232_013.wav",
         help="Path to audio."
-    )
-    parser.add_argument(
-        '--onnx-path', type=str,
-        help="Path to save exported onnx file."
     )
     parser.add_argument('--save-output', action='store_true')
     parser.add_argument(
@@ -82,14 +81,6 @@ if __name__ == "__main__":
         '--hop-size', type=int, default=256,
         help="Hop size."
     )
-    parser.add_argument(
-        '--win-size', type=int, default=512,
-        help="Window size."
-    )
-    parser.add_argument(
-        '--win-type', type=str, default="hann",
-        help="Window type."
-    )
-    
+
     args = parser.parse_args()
     main(args)

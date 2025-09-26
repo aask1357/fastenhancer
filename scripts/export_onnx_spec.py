@@ -14,7 +14,7 @@ from tqdm import tqdm
 import scipy.io.wavfile
 
 from utils import get_hparams
-from wrapper import ModelWrapper
+from wrappers import get_wrapper
 
 
 def onnx_simplify(onnx_model):
@@ -39,8 +39,7 @@ def main(args):
     n_fft = hps.model_kwargs.n_fft
     hop_size = hps.model_kwargs.hop_size
     win_size = hps.model_kwargs.win_size
-    # hps.model = ".".join(hps.model.split(".")[:-1])
-    wrapper = ModelWrapper(hps)
+    wrapper = get_wrapper(hps.wrapper)(hps)
     wrapper.load()
     wrapper.eval()
 

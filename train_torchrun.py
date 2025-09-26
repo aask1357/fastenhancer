@@ -13,7 +13,7 @@ import numpy as np
 
 from utils.data import get_dataset_dataloader
 from utils import get_hparams, summarize
-from models import get_wrapper
+from wrappers import get_wrapper
 
 
 def close_writer(writer : SummaryWriter):
@@ -55,21 +55,20 @@ def main():
     np.random.seed(seed)
 
     torch.cuda.set_device(rank)
-    wrapper = get_wrapper(hps.model)(hps, train=True, rank=rank)
+    wrapper = get_wrapper(hps.wrapper)(hps, train=True, rank=rank)
     wrapper.load()
     
-    textprocessor = getattr(wrapper, "textprocessor", None)
     train_dataset, train_loader = get_dataset_dataloader(
-        hps, mode="train", keys=wrapper.keys, textprocessor=textprocessor,
+        hps, mode="train", keys=wrapper.keys,
         n_gpus=n_gpus, rank=rank)
     val_keys = getattr(wrapper, "val_keys", wrapper.keys)
     _, val_loader = get_dataset_dataloader(
-        hps, mode="valid", keys=val_keys, textprocessor=textprocessor,
+        hps, mode="valid", keys=val_keys,
         n_gpus=n_gpus, rank=rank)
     
     if rank == 0:
         _, infer_loader = get_dataset_dataloader(
-            hps, mode="infer", keys=wrapper.infer_keys, textprocessor=textprocessor,
+            hps, mode="infer", keys=wrapper.infer_keys,
             n_gpus=1, rank=0)
 
         writer_train = SummaryWriter(log_dir=os.path.join(hps.base_dir, "train"))

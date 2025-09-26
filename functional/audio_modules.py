@@ -1,5 +1,5 @@
 import warnings
-from typing import Optional, Tuple
+from typing import Optional, Tuple, List
 
 import torch
 from torch import Tensor, nn
@@ -143,7 +143,7 @@ class CompressedSTFT(STFT):
         self.discard_last_freq_bin = discard_last_freq_bin
     
     def forward(self, x: Tensor) -> Tensor:
-        # x: [B, 1, T_wav]
+        # x: [B, 1, T_wav] or [B, T_wav]
         # output: [B, n_fft//2, T, 2] (real) if discard_last_freq_bin=True
         # output: [B, n_fft//2+1, T, 2] (real) if discard_last_freq_bin=False
         x = super().forward(x)
@@ -235,24 +235,46 @@ class ONNXSTFT(nn.Module):
         self.register_buffer("window_istft", window_istft, persistent=False)
         self.window_istft: Tensor
 
-    def initialize_cache(self, x: Tensor) -> Tensor:
-        cache = torch.zeros(x.size(0), self.cache_len, dtype=x.dtype, device=x.device)
-        return cache
+    def _initialize_cache(self, x: Tensor) -> List[Tensor]:
+        cache_stft = torch.zeros(x.size(0), self.cache_len, dtype=x.dtype, device=x.device)
+        return [cache_stft]
 
-    def forward(self, x: Tensor) -> Tensor:
-        '''x: [B=1, n_fft]
+    def _forward(self, x: Tensor) -> Tensor:
+        '''x: [B=1, hop_size]
+        cache: [B=1, n_fft-hop_size]
         output: [B, n_fft//2, T=1, 2]
         '''
         x = x * self.window
         x = torch.fft.rfft(x, dim=1)            # [1, self.n_fft//2+1] (complex)
-        x = torch.view_as_real(x).unsqueeze(2)  # [1, self.n_fft//2+1, 1, 2] 9real)
+        x = torch.view_as_real(x).unsqueeze(2)  # [1, self.n_fft//2+1, 1, 2] (real)
         # x = x.stft(n_fft=self.n_fft, hop_length=self.hop_size,
         #            window=self.window, normalized=self.normalized,
         #            center=False, onesided=True, return_complex=True)
         # x = torch.view_as_real(x)
         return x
 
-    def inverse(self, x: Tensor, cache: Optional[Tensor]) -> Tuple[Tensor, Tensor]:
+    def initialize_cache(self, x: Tensor) -> List[Tensor]:
+        cache_stft = torch.zeros(x.size(0), self.cache_len, dtype=x.dtype, device=x.device)
+        cache_istft = torch.zeros(x.size(0), self.cache_len, dtype=x.dtype, device=x.device)
+        return [cache_stft, cache_istft]
+
+    def forward(self, x: Tensor, cache: Tensor) -> Tuple[Tensor, Tensor]:
+        '''x: [B=1, hop_size]
+        cache: [B=1, n_fft-hop_size]
+        output: [B, n_fft//2, T=1, 2]
+        '''
+        x = torch.cat([cache, x], dim=1)  # [B, n_fft]
+        cache = x[:, -self.cache_len:]    # [B, n_fft-hop_size]
+        x = x * self.window
+        x = torch.fft.rfft(x, dim=1)            # [1, self.n_fft//2+1] (complex)
+        x = torch.view_as_real(x).unsqueeze(2)  # [1, self.n_fft//2+1, 1, 2] (real)
+        # x = x.stft(n_fft=self.n_fft, hop_length=self.hop_size,
+        #            window=self.window, normalized=self.normalized,
+        #            center=False, onesided=True, return_complex=True)
+        # x = torch.view_as_real(x)
+        return x, cache
+
+    def inverse(self, x: Tensor, cache: Tensor) -> Tuple[Tensor, Tensor]:
         '''input:
             x: [B, N//2+1, T=1, 2]
             cache: [B, N-H]
@@ -293,8 +315,7 @@ class ONNXSTFT(nn.Module):
         # irFFT end
 
         x = x * self.window_istft
-        if cache is not None:
-            x[:, :cache.size(1)] += cache
+        x[:, :cache.size(1)] += cache
         out = x[:, :-(self.n_fft - self.hop_size)]      # [B, H*T]
         cache = x[:, -(self.n_fft - self.hop_size):]    # [B, N-H]
         return out, cache

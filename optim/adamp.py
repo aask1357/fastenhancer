@@ -43,11 +43,11 @@ class AdamP(Optimizer):
     def __init__(
         self, params, lr=1e-3, betas=(0.9, 0.999), eps=1e-8,
         weight_decay=0, delta=0.1, wd_ratio=0.1, nesterov=False,
-        projection="check"
+        projection="auto"
     ):
-        assert (projection in ["check", "disabled", "channelwise", "layerwise"]) \
+        assert (projection in ["auto", "disabled", "channelwise", "layerwise"]) \
             or isinstance(projection, int), \
-            f"`projection` should be 'check', 'disabled', 'channelwise', 'layerwise' or int," \
+            f"`projection` should be 'auto', 'disabled', 'channelwise', 'layerwise' or int," \
             f" but got {projection}"
         defaults = dict(
             lr=lr, betas=betas, eps=eps, weight_decay=weight_decay,
@@ -136,7 +136,7 @@ class AdamP(Optimizer):
                 # Projection
                 if p.numel() == 1 or projection == "disabled":
                     wd_ratio = 1
-                elif projection == "check":
+                elif projection == "auto":
                     perturb, wd_ratio = self._projection(
                         p, grad, perturb, group['delta'],
                         group['wd_ratio'], eps

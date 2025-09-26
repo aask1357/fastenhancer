@@ -17,7 +17,12 @@ def main(args):
     wav = torch.cat([wav] * 8, dim=1)
     length = wav.size(-1) // args.hop_size * args.hop_size
     wav = wav[:, :length]
-    window = torch.hann_window(args.win_size)
+    if args.win_type == "hann":
+        window = torch.hann_window(args.win_size)
+    elif args.win_type == "hann-sqrt":
+        window = torch.hann_window(args.win_size).sqrt()
+    else:
+        raise ValueError(f"Unsupported window type: {args.win_type}")
     spec = wav.stft(
         n_fft=args.n_fft, hop_length=args.hop_size, win_length=args.win_size,
         onesided=True, window=window, normalized=False, return_complex=True
@@ -38,7 +43,6 @@ def main(args):
     )
 
     # Prepare cache
-    print([(x.name, x.shape) for x in sess.get_inputs()])
     onnx_input = {
         x.name: np.zeros(x.shape, dtype=np.float32)
         for x in sess.get_inputs()

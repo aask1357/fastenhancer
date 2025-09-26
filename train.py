@@ -13,7 +13,7 @@ import numpy as np
 
 from utils.data import get_dataset_dataloader
 from utils import get_hparams, summarize
-from wrapper import ModelWrapper
+from wrappers import get_wrapper
 
 
 def close_writer(writer : SummaryWriter):
@@ -62,7 +62,13 @@ def run(rank, n_gpus, hps):
     torch.backends.cuda.matmul.allow_tf32 = True
     torch.backends.cudnn.allow_tf32 = True
     torch.set_float32_matmul_precision('medium')
-    dist.init_process_group(backend='nccl', init_method='env://', world_size=n_gpus, rank=rank)
+    dist.init_process_group(
+        backend='nccl',
+        init_method='env://',
+        world_size=n_gpus,
+        rank=rank,
+        device_id=rank
+    )
     hp = hps.train
 
     seed = hp.seed
@@ -72,36 +78,35 @@ def run(rank, n_gpus, hps):
     np.random.seed(seed)
 
     torch.cuda.set_device(rank)
-    wrapper = ModelWrapper(hps, train=True, rank=rank)
+    wrapper = get_wrapper(hps.wrapper)(hps, train=True, rank=rank)
     wrapper.load()
-    
-    textprocessor = getattr(wrapper, "textprocessor", None)
+
     train_dataset, train_loader = get_dataset_dataloader(
-        hps, mode="train", keys=wrapper.keys, textprocessor=textprocessor,
+        hps, mode="train", keys=wrapper.keys,
         n_gpus=n_gpus, rank=rank)
     val_keys = getattr(wrapper, "val_keys", wrapper.keys)
     _, val_loader = get_dataset_dataloader(
-        hps, mode="valid", keys=val_keys, textprocessor=textprocessor,
+        hps, mode="valid", keys=val_keys,
         n_gpus=n_gpus, rank=rank)
-    
+
     if rank == 0:
         _, infer_loader = get_dataset_dataloader(
-            hps, mode="infer", keys=wrapper.infer_keys, textprocessor=textprocessor,
+            hps, mode="infer", keys=wrapper.infer_keys,
             n_gpus=1, rank=0)
 
         writer_train = SummaryWriter(log_dir=os.path.join(hps.base_dir, "train"))
         writer_valid = SummaryWriter(log_dir=os.path.join(hps.base_dir, "valid"))
         atexit.register(close_writer, writer_train)
         atexit.register(close_writer, writer_valid)
-    
+
         if wrapper.epoch == 0:
             if wrapper.plot_param_and_grad:
                 hists = wrapper.plot_initial_param(train_loader)
                 summarize(writer_train, epoch=0, hists=hists)
             #wrapper.save()
-        
+
         start_time = time.time()
-    
+
     if hasattr(hps, "infer"):
         infer_interval = hps.infer.interval
     else:
@@ -109,14 +114,14 @@ def run(rank, n_gpus, hps):
     for epoch in range(wrapper.epoch + 1, hps.train.max_epochs + 1):
         wrapper.epoch = epoch
         lr = wrapper.get_lr()
-        
+
         # train
-        train_dataset.shuffle(hp.seed + epoch)
+        train_dataset.shuffle(hp.seed + epoch)  # type: ignore
         summary_train = wrapper.train_epoch(train_loader)
-        
+
         # valid
         summary_valid = wrapper.valid_epoch(val_loader)
-        
+
         # summarize & infer
         if rank == 0:
             if epoch == 1 or epoch % infer_interval == 0:
@@ -147,8 +152,8 @@ def run(rank, n_gpus, hps):
 
     # It seems that in certain cases, this function doesn't finish, so I commented it.
     # See "https://github.com/pytorch/pytorch/issues/75097"
-    # dist.barrier()
-    # dist.destroy_process_group()
+    dist.barrier()
+    dist.destroy_process_group()
 
 
 if __name__ == '__main__':

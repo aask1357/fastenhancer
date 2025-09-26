@@ -70,6 +70,7 @@ train:
         weight_decay: 0.01  # normal weights -> 1e-2
         wd_ratio: 1.0
         betas: [0.95, 0.999]
+        projection: auto
     optimizer_groups:
         -
             regex_list:
@@ -77,7 +78,7 @@ train:
             projection: channelwise
         -
             regex_list:
-                - "fullband_decoder\\.[01]\\.1\\.weight"     # convT before BN
+                - "fullband_decoder\\.[01]\\.1\\.weight"    # convT before BN
             projection: 1
     scheduler: CosineAnnealingWarmup
     scheduler_kwargs:
