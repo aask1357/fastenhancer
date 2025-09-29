@@ -2,7 +2,7 @@
 
 [github](https://github.com/aask1357/fastenhancer) | [paper]().
 
-## Contents:
+## Contents
 
 * [Installation](installation/index.md)
     * [Installation for all features](installation/index.md#installation-for-all-features)

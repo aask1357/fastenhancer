@@ -1,23 +1,25 @@
 site_name: FastEnhancer
 theme:
-    name: readthedocs
+    name: material
     features:
         - navigation.indexes
         - content.code.copy
 nav:
     - Home: index.md
     - Installation:
-        - Overview: installation/index.md
+        - installation/index.md
         - Installation for Training: installation/training.md
     - Dataset:
-        - Overview: dataset/index.md
+        - dataset/index.md
         - Voicebank-Demand: dataset/voicebank-demand.md
         - DNS-Challenge: dataset/dns-challenge.md
     - Training:
-        - Overview: train/index.md
+        - train/index.md
         - FastEnhancer: train/fastenhancer.md
         - BSRNN: train/bsrnn.md
         - FSPEN: train/fspen.md
         - LiSenNet: train/lisennet.md
-    - Objective Metrics: metrics.md
-    - ONNX: onnx.md
+    - Objective Metrics:
+        - metrics.md
+    - ONNX:
+        - onnx.md
