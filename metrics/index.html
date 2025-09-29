@@ -43,17 +43,34 @@
                 <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
                 </li>
               </ul>
+              <p class="caption"><span class="caption-text">Installation</span></p>
               <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../installation/">Installation</a>
-                </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../installation/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../installation/training/">Installation for Training</a>
+                  </li>
               </ul>
+              <p class="caption"><span class="caption-text">Dataset</span></p>
               <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../dataset/">Dataset</a>
-                </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../dataset/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../dataset/voicebank-demand/">Voicebank-Demand</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../dataset/dns-challenge/">DNS-Challenge</a>
+                  </li>
               </ul>
+              <p class="caption"><span class="caption-text">Training</span></p>
               <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../train/">Training</a>
-                </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../train/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../train/fastenhancer/">FastEnhancer</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../train/bsrnn/">BSRNN</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../train/fspen/">FSPEN</a>
+                  </li>
+                  <li class="toctree-l1"><a class="" href="../train/lisenet.md">LiSenNet</a>
+                  </li>
               </ul>
               <ul class="current">
                 <li class="toctree-l1 current"><a class="reference internal current" href="#">Objective Metrics</a>
@@ -91,22 +108,22 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="objective-metrics">Objective Metrics</h1>
-<p>We support
-- DNSMOS P.808 and P.835 (SIG, BAK, OVL)
-- SCOREQ (<a href="https://github.com/alessandroragano/scoreq">github</a>)
-  - It provides two domains: Natural Speech domain trained for real recordings, and Synthetic Speech domain trained for TTS.
-  - We use Natural Speech domain.
-  - It provides two modes: no-reference (NR) and non-matching reference (NMR). NR mode is a non-intrusive mode. NMR mode takes reference and degraded signals. However, the reference doesn't have to be the clean speech pair of the degraded signal.
-  - We use full reference mode, meaning clean speech is given as the reference of the NMR mode.
-- SISDR
-  - On some implementations, mean values of reference and degraded signal are substracted. However, we don't perform mean substraction.
-- PESQ (<a href="https://github.com/ludlows/PESQ">github</a>)
-  - We use P.862.2 without Corrigendum 2. For more information, see the following <a href="https://arxiv.org/abs/2505.19760">paper</a> and <a href="https://github.com/audiolabs/PESQ">github</a>.
-- STOI and ESTOI (<a href="https://github.com/mpariente/pystoi">github</a>)
-- WER
-  - <a href="https://huggingface.co/openai/whisper-large-v3-turbo">Whisper-large-v3-turbo</a> is used.
-  - For Voicebank-Demand testset, there exists transcript, so we can calculate WER.
-  - For DNS-Challenge dev testset (Interspeech2020, synthetic), transcript is not provided. Furthermore, each clean speech is a random crop of a long audio, so the beginning and end of the speech are cut off. Therefore, it is impossible to create a transcript. We don't calculate WER for DNS-Challenge.</p>
+<p>We support<br />
+- DNSMOS P.808 and P.835 (SIG, BAK, OVL)<br />
+- SCOREQ (<a href="https://github.com/alessandroragano/scoreq">github</a>)<br />
+  - It provides two domains: Natural Speech domain trained for real recordings, and Synthetic Speech domain trained for TTS.<br />
+  - We use Natural Speech domain.<br />
+  - It provides two modes: no-reference (NR) and non-matching reference (NMR). NR mode is a non-intrusive mode. NMR mode takes reference and degraded signals. However, the reference doesn't have to be the clean speech pair of the degraded signal.<br />
+  - We use full reference mode, meaning clean speech is given as the reference of the NMR mode.<br />
+- SISDR<br />
+  - On some implementations, mean values of reference and degraded signal are substracted. However, we don't perform mean substraction.<br />
+- PESQ (<a href="https://github.com/ludlows/PESQ">github</a>)<br />
+  - We use P.862.2 without Corrigendum 2. For more information, see the following <a href="https://arxiv.org/abs/2505.19760">paper</a> and <a href="https://github.com/audiolabs/PESQ">github</a>.<br />
+- STOI and ESTOI (<a href="https://github.com/mpariente/pystoi">github</a>)<br />
+- WER<br />
+  - <a href="https://huggingface.co/openai/whisper-large-v3-turbo">Whisper-large-v3-turbo</a> is used.<br />
+  - For Voicebank-Demand testset, there exists transcript, so we can calculate WER.<br />
+  - For DNS-Challenge dev testset (Interspeech2020, synthetic), transcript is not provided. Furthermore, each clean speech is a random crop of a long audio, so the beginning and end of the speech are cut off. Therefore, it is impossible to create a transcript. We don't calculate WER for DNS-Challenge.  </p>
 <h2 id="calculating-objective-metrics">Calculating objective metrics</h2>
 <p>Assume you want to calculate objective metrics for a model in <code>logs/fastenhancer_l</code>.<br />
 For Voicebank-Demand, run the following code:</p>
@@ -118,7 +135,7 @@ For Voicebank-Demand, run the following code:</p>
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../train/" class="btn btn-neutral float-left" title="Training"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../train/fspen/" class="btn btn-neutral float-left" title="FSPEN"><span class="icon icon-circle-arrow-left"></span> Previous</a>
         <a href="../onnx/" class="btn btn-neutral float-right" title="ONNX">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
@@ -142,7 +159,7 @@ For Voicebank-Demand, run the following code:</p>
   <span class="rst-current-version" data-toggle="rst-current-version">
     
     
-      <span><a href="../train/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../train/fspen/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
       <span><a href="../onnx/" style="color: #fcfcfc">Next &raquo;</a></span>

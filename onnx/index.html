@@ -43,17 +43,34 @@
                 <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
                 </li>
               </ul>
+              <p class="caption"><span class="caption-text">Installation</span></p>
               <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../installation/">Installation</a>
-                </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../installation/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../installation/training/">Installation for Training</a>
+                  </li>
               </ul>
+              <p class="caption"><span class="caption-text">Dataset</span></p>
               <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../dataset/">Dataset</a>
-                </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../dataset/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../dataset/voicebank-demand/">Voicebank-Demand</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../dataset/dns-challenge/">DNS-Challenge</a>
+                  </li>
               </ul>
+              <p class="caption"><span class="caption-text">Training</span></p>
               <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../train/">Training</a>
-                </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../train/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../train/fastenhancer/">FastEnhancer</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../train/bsrnn/">BSRNN</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../train/fspen/">FSPEN</a>
+                  </li>
+                  <li class="toctree-l1"><a class="" href="../train/lisenet.md">LiSenNet</a>
+                  </li>
               </ul>
               <ul>
                 <li class="toctree-l1"><a class="reference internal" href="../metrics/">Objective Metrics</a>
@@ -97,9 +114,11 @@
                 <h1 id="onnx">ONNX</h1>
 <p>You can export your own model to ONNX and execute ONNXRuntime.<br />
 You can also download pre-compiled ONNX file and execute ONNXRuntime.  </p>
-<p>There are two ways for ONNXRuntime.<br />
-1. Spectrogram-to-spectrogram (spec2spec) version: STFT and iSTFT are done in PyTorch. Only the neural network part is calculated in ONNXRuntime. This version is exported using torch.export.
-2. Waveform-to-waveform (wav2wav) version: STFT and iSTFT are also done in ONNXRuntime. This version is exported using torchdynamo. Only FastEnhancers are successfully exported to this version. For other models, it is either impossible to create a wav2wav version or the ONNXRuntime execution speed is very slow.  </p>
+<p>There are two ways for ONNXRuntime.  </p>
+<ol>
+<li>Spectrogram-to-spectrogram (spec2spec) version: STFT and iSTFT are done in PyTorch. Only the neural network part is calculated in ONNXRuntime. This version is exported using torch.export.  </li>
+<li>Waveform-to-waveform (wav2wav) version: STFT and iSTFT are also done in ONNXRuntime. This version is exported using torchdynamo. Only FastEnhancers are successfully exported to this version. For other models, it is either impossible to create a wav2wav version or the ONNXRuntime execution speed is very slow.  </li>
+</ol>
 <p>The RTFs in our paper are measured using spec2spec versions.</p>
 <h2 id="exporting-to-onnx-and-executing-onnxruntime">Exporting to ONNX and executing ONNXRuntime</h2>
 <p>Suppose you have trained a model and saved its checkpoints at <code>logs/fastenhancer_l</code>.<br />
@@ -151,13 +170,15 @@ Also, at the beggining of second iteration, only <code>x[n:n+h]</code> is a new 
 <p>So,<br />
 At the first iteration, the model saves <code>x[h:n]</code> as its input cache and <code>y[h:n]</code> as its output cache.<br />
 At the second iteration, the model gets <code>x[n:n+h]</code> as an input. The model concatenate its input cache with the new input to make <code>x[h:n+h]</code>. The model generates <code>y[h:n+h]</code>. It is overlap-added with the previous output cache <code>y[h:n]</code>. Since <code>y[h:2*h]</code> is now completed, it is returned. The model caches <code>x[2*h:n+h]</code> and <code>y[2*h:n+h]</code> for the next iteration.  </p>
-<p>The final algorithm is as below:
-- Initially, the model has an input cache <code>cache_in</code> whose length is <code>n-h</code> and filled with zeros. The model also has an output cache <code>cache_out</code> whose length is <code>n-h</code> and filled with zeros.
-- At every iterations, the model gets a new input chunk <code>x</code> with a length of <code>h</code>.
-- The model concatenate the input chunk with its input cache to create an input with a length of <code>n</code>:
+<p>The final algorithm is as below:  </p>
+<ul>
+<li>Initially, the model has an input cache <code>cache_in</code> whose length is <code>n-h</code> and filled with zeros. The model also has an output cache <code>cache_out</code> whose length is <code>n-h</code> and filled with zeros.  </li>
+<li>At every iterations, the model gets a new input chunk <code>x</code> with a length of <code>h</code>.  </li>
+<li>
+<p>The model concatenate the input chunk with its input cache to create an input with a length of <code>n</code>:
 <br />
 <pre><code>x = torch.cat([cache_in, x])</code></pre></p>
-<ul>
+</li>
 <li>
 <p>The model saves the last <code>n-h</code> samples as its new input cache:
 <br />

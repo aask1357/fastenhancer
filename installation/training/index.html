@@ -43,17 +43,44 @@
                 <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
                 </li>
               </ul>
-              <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../">Installation</a>
-                </li>
+              <p class="caption"><span class="caption-text">Installation</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../">Overview</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Installation for Training</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#0-decide-python-cuda-toolkit-and-pytorch-versions">(0) Decide Python, CUDA toolkit, and PyTorch versions</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#1-install-cuda-toolkit-and-cudnn">(1) Install CUDA toolkit and cuDNN</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#2-install-pytorch-and-torchaudio">(2) Install PyTorch and Torchaudio</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#3-install-other-dependencies">(3) Install other dependencies</a>
+    </li>
+    </ul>
+                  </li>
               </ul>
+              <p class="caption"><span class="caption-text">Dataset</span></p>
               <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../../dataset/">Dataset</a>
-                </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../dataset/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../dataset/voicebank-demand/">Voicebank-Demand</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../dataset/dns-challenge/">DNS-Challenge</a>
+                  </li>
               </ul>
+              <p class="caption"><span class="caption-text">Training</span></p>
               <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../../train/">Training</a>
-                </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../train/">Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../train/fastenhancer/">FastEnhancer</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../train/bsrnn/">BSRNN</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../train/fspen/">FSPEN</a>
+                  </li>
+                  <li class="toctree-l1"><a class="" href="../../train/lisenet.md">LiSenNet</a>
+                  </li>
               </ul>
               <ul>
                 <li class="toctree-l1"><a class="reference internal" href="../../metrics/">Objective Metrics</a>
@@ -77,6 +104,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Installation</li>
       <li class="breadcrumb-item active">Installation for Training</li>
     <li class="wy-breadcrumbs-aside">
     </li>
@@ -87,19 +115,21 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="installation-for-training">Installation for Training</h1>
-<p>We tested under:
-- PyTorch==2.7.1, CudaToolkit==11.8, Python==3.13
-- PyTorch==2.7.1, CudaToolkit==12.8, Python==3.13
-We failed under:
-- PyTorch==2.8.0
-  - We succeeded to train, calculate metrics, export ONNX spec2spec, and execute ONNXRuntime.
-  - However, we failed to export ONNX wav2wav. After downgrading to PyTorch==2.7.1, the problem is solved.</p>
+<p>We tested under:<br />
+- PyTorch==2.7.1, CudaToolkit==11.8, Python==3.13<br />
+- PyTorch==2.7.1, CudaToolkit==12.8, Python==3.13  </p>
+<p>Note that we failed under PyTorch==2.8.0.<br />
+- We succeeded to train, calculate metrics, export ONNX spec2spec, and execute ONNXRuntime.<br />
+- However, we failed to export ONNX wav2wav. After downgrading to PyTorch==2.7.1, the problem is solved.  </p>
 <h2 id="0-decide-python-cuda-toolkit-and-pytorch-versions">(0) Decide Python, CUDA toolkit, and PyTorch versions</h2>
 <p>Before install, you have to decide which version to install (including Python, CUDA toolkit, and PyTorch).<br />
 Note that <code>PyTorch&gt;=2.3</code> is recommended. On <code>PyTorch&lt;2.3</code>, <code>torch.nn.utils.parametrizations.weight_norm</code> is not implemented, so you have to change the codes and .yaml files. You also have to remove <code>device_id</code> argument of <code>dist.init_process_group</code> in <code>train.py</code>.  </p>
 <p>First, check CUDA toolkit versions that your nvidia driver supports:</p>
-<pre><code><span style="color: #55FF55;font-weight: bold">shahn</span>:<span style="color: #5555FF;font-weight: bold">~</span>$ nvidia-smi | grep "CUDA Version"
-| NVIDIA-SMI 580.65.06              Driver Version: 580.65.06      <span style="color: red;font-weight: bold">CUDA Version</span>: 13.0     |</code></pre>
+<pre><code>nvidia-smi | grep &quot;CUDA Version&quot;
+</code></pre>
+<p>The output should look like this:</p>
+<pre><code>| NVIDIA-SMI 580.65.06              Driver Version: 580.65.06      CUDA Version: 13.0     |
+</code></pre>
 <p>That is the maximum CUDA toolkit version you can install. In our case, we can choose any version <code>&lt;= 13.0</code>.  </p>
 <p>Second, visit <a href="https://download.pytorch.org/whl/torch/">here</a> and decide PyTorch, Python, and CUDA toolkit version.<br />
 Then install Python to your environment.<br />
@@ -111,7 +141,7 @@ conda activate fastenhancer</pre>
 <h2 id="1-install-cuda-toolkit-and-cudnn">(1) Install CUDA toolkit and cuDNN</h2>
 <p>Download a local runfile of <a href="https://developer.nvidia.com/cuda-toolkit-archive">CUDA toolkit</a> and install.<br />
 In the following example, we will install CUDA toolkit <code>12.8</code> in <code>/home/shahn/.local/cuda-12.8</code>:</p>
-<pre><code>wget https://developer.download.nvidia.com/compute/cuda/12.9.1/local_installers/cuda_12.8.1_570.124.06_linux.run
+<pre><code>wget https://developer.download.nvidia.com/compute/cuda/12.8.1/local_installers/cuda_12.8.1_570.124.06_linux.run
 
 chmod +x cuda_12.8.1_570.124.06_linux.run
 
@@ -131,26 +161,35 @@ Then, install a tar file of <a href="https://developer.nvidia.com/rdp/cudnn-arch
 export PATH=$CUDA_HOME/bin:$PATH
 export LD_LIBRARY_PATH=$CUDA_HOME/lib64:$CUDA_HOME/lib:$LD_LIBRARY_PATH</code></pre>
 <p>and check:</p>
-<pre><code>(fastenhancer) <span style="color: #55FF55;font-weight: bold">shahn</span>:<span style="color: #5555FF;font-weight: bold">~</span>$ which nvcc
-/home/shahn/.local/cuda-12.8/bin/nvcc
-(fastenhancer) <span style="color: #55FF55;font-weight: bold">shahn</span>:<span style="color: #5555FF;font-weight: bold">~</span>$ nvcc --version
+<pre><code>which nvcc
+
+nvcc --version
+</code></pre>
+<p>Then the output should look like this:</p>
+<pre><code>/home/shahn/.local/cuda-12.8/bin/nvcc
+
 nvcc: NVIDIA (R) Cuda compiler driver
 Copyright (c) 2005-2025 NVIDIA Corporation
-Built on Wed_Apr__9_19:24:57_PDT_2025
-Cuda compilation tools, release 12.9, V12.9.41
-Build cuda_12.9.r12.9/compiler.35813241_0</code></pre>
-
+Built on Fri_Feb_21_20:23:50_PST_2025
+Cuda compilation tools, release 12.8, V12.8.93
+Build cuda_12.8.r12.8/compiler.35583870_0
+</code></pre>
 <h2 id="2-install-pytorch-and-torchaudio">(2) Install PyTorch and Torchaudio</h2>
 <p>Check which torchaudio version matches your PyTorch version at <a href="https://pytorch.org/audio/stable/installation.html#compatibility-matrix">here</a>.<br />
 Then install approriate version of PyTorch and Torchaudio.<br />
-In the following example, we install PyTorch <code>2.8.0</code>, CUDA <code>12.9</code> as below:</p>
-<pre><code>pip install torch==2.8.0+cu129 torchaudio==2.8.0+cu129 --index-url https://download.pytorch.org/whl</code></pre>
-
+In the following example, we install PyTorch <code>2.7.1</code>, CUDA <code>12.8</code> as below:</p>
+<pre><code>pip install torch==2.7.1+cu128 torchaudio==2.7.1+cu128 --index-url https://download.pytorch.org/whl
+</code></pre>
 <h2 id="3-install-other-dependencies">(3) Install other dependencies</h2>
-<pre><code>pip install jupyter notebook matplotlib tensorboard scipy librosa unidecode einops cython tqdm pyyaml pesq pystoi torch-pesq torchmetrics</code></pre>
+<pre><code>pip install jupyter notebook matplotlib tensorboard scipy librosa unidecode einops cython tqdm pyyaml pesq pystoi torch-pesq torchmetrics
+</code></pre>
               
             </div>
           </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../" class="btn btn-neutral float-left" title="Overview"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../../dataset/" class="btn btn-neutral float-right" title="Overview">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
 
   <hr/>
 
@@ -172,6 +211,10 @@ In the following example, we install PyTorch <code>2.8.0</code>, CUDA <code>12.9
   <span class="rst-current-version" data-toggle="rst-current-version">
     
     
+      <span><a href="../" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../../dataset/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
