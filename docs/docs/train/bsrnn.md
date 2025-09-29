@@ -11,7 +11,7 @@ We implemented a streaming BSRNN with batch normalization. We follow [2] for the
 
 ## Training
 - Model: BSRNN-xxt
-- Dataset: [Voicebank-Demand](voicebank-demand.md) at 16kHz sampling rate. 
+- Dataset: [Voicebank-Demand](../dataset/voicebank-demand.md) at 16kHz sampling rate. 
 - Number of GPUs: 1
 - Batch size: 64
 - Mixed-precision training with fp16: False

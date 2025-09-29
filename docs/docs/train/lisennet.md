@@ -6,7 +6,7 @@ The official implementation includes input normalization and Griffin-Lim, so it 
 
 ## Training
 - Model: LiSenNet
-- Dataset: [Voicebank-Demand](voicebank-demand.md) at 16kHz sampling rate. 
+- Dataset: [Voicebank-Demand](../dataset/voicebank-demand.md) at 16kHz sampling rate. 
 - Number of GPUs: 1
 - Batch size: 64
 - Mixed-precision training with fp16: False
