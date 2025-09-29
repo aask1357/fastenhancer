@@ -61,7 +61,7 @@ After deleting the checkpoints in `logs/vbd`, the log directory will be:
 ## Experience sharing
 Except for Voicebank-Demand at 16kHz sampling rate, we recommend not to use PESQLoss. The reasons are:  
 1. It harms stable training.  
-2. It doesn't improve other metrics so much (in VoiceBank-Demand @ 16kHz, other metrics marginally improves, so we included it in our paper).
+2. It doesn't improve other metrics so much (in VoiceBank-Demand @ 16kHz, other metrics marginally improves, so we included it in our paper).  
 3. The loss includes multiple IIR filter calculations, resulting in increased training time.  
 
 In our experiments, we found that using MetricGAN instead of PESQLoss shows inferior results. MetricGAN achieved a smaller PESQ improvement than PESQLoss and degraded other objective metrics. However, these results may vary depending on the loss functions, batch size, datasets, and models.

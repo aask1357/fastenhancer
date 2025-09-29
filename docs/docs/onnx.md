@@ -3,7 +3,8 @@ You can export your own model to ONNX and execute ONNXRuntime.
 You can also download pre-compiled ONNX file and execute ONNXRuntime.  
 
 There are two ways for ONNXRuntime.  
-1. Spectrogram-to-spectrogram (spec2spec) version: STFT and iSTFT are done in PyTorch. Only the neural network part is calculated in ONNXRuntime. This version is exported using torch.export.
+
+1. Spectrogram-to-spectrogram (spec2spec) version: STFT and iSTFT are done in PyTorch. Only the neural network part is calculated in ONNXRuntime. This version is exported using torch.export.  
 2. Waveform-to-waveform (wav2wav) version: STFT and iSTFT are also done in ONNXRuntime. This version is exported using torchdynamo. Only FastEnhancers are successfully exported to this version. For other models, it is either impossible to create a wav2wav version or the ONNXRuntime execution speed is very slow.  
 
 The RTFs in our paper are measured using spec2spec versions.
@@ -53,9 +54,10 @@ So,
 At the first iteration, the model saves `x[h:n]` as its input cache and `y[h:n]` as its output cache.  
 At the second iteration, the model gets `x[n:n+h]` as an input. The model concatenate its input cache with the new input to make `x[h:n+h]`. The model generates `y[h:n+h]`. It is overlap-added with the previous output cache `y[h:n]`. Since `y[h:2*h]` is now completed, it is returned. The model caches `x[2*h:n+h]` and `y[2*h:n+h]` for the next iteration.  
 
-The final algorithm is as below:
-- Initially, the model has an input cache `cache_in` whose length is `n-h` and filled with zeros. The model also has an output cache `cache_out` whose length is `n-h` and filled with zeros.
-- At every iterations, the model gets a new input chunk `x` with a length of `h`.
+The final algorithm is as below:  
+
+- Initially, the model has an input cache `cache_in` whose length is `n-h` and filled with zeros. The model also has an output cache `cache_out` whose length is `n-h` and filled with zeros.  
+- At every iterations, the model gets a new input chunk `x` with a length of `h`.  
 - The model concatenate the input chunk with its input cache to create an input with a length of `n`:
   <pre><code>x = torch.cat([cache_in, x])</code></pre>
 - The model saves the last `n-h` samples as its new input cache:
