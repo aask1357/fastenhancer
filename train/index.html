@@ -130,6 +130,20 @@ Suppose the log directory looks like this:</p>
 <p>If you just want to check how many checkpoints you can delete, instead of actually deleting them, run without the <code>--delete</code> flag:</p>
 <pre><code>python scripts/clean_checkpoints.py -n vbd</code></pre>
 
+<p>After deleting the checkpoints in <code>logs/vbd</code>, the log directory will be:</p>
+<pre><code>logs
+├─ vbd
+|  ├─ fastenhancer_b
+|  |  └─ 00500.pth
+|  └─ fastenhancer_t
+|     └─ 00500.pth
+└─ dns
+   └─ fastenhancer_b
+      ├─ 00020.pth
+      ├─ ...
+      ├─ 00480.pth
+      └─ 00500.pth</code></pre>
+
 <h2 id="experience-sharing">Experience sharing</h2>
 <p>Except for Voicebank-Demand at 16kHz sampling rate, we recommend not to use PESQLoss. The reasons are:<br />
 1. It harms stable training.<br />
