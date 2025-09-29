@@ -88,14 +88,14 @@
               
                 <h1 id="bsrnn">BSRNN</h1>
 <ul>
-<li>Original paper that proposed BSRNN: <a href="https://arxiv.org/abs/2209.15174">paper</a>[^1]  </li>
-<li>First paper that used BSRNN to noise suppression: <a href="https://arxiv.org/abs/2212.00406">paper</a>[^2]  </li>
-<li>BSRNN model size scaling: <a href="https://arxiv.org/abs/2406.04269">paper</a>[^3] | <a href="https://github.com/Emrys365/se-scaling">github</a>  </li>
+<li>Original paper that proposed BSRNN: <a href="https://arxiv.org/abs/2209.15174">Paper</a> [1]  </li>
+<li>BSRNN applied to noise suppression: <a href="https://arxiv.org/abs/2212.00406">Paper</a> [2]  </li>
+<li>BSRNN model size scaling: <a href="https://arxiv.org/abs/2406.04269">Paper</a> [3] | <a href="https://github.com/Emrys365/se-scaling">Github</a>  </li>
 </ul>
-<p>We implemented a streaming BSRNN with batch normalization. We follow [2] for the configurations of different sizes.  </p>
-<p>[^1]: Y. Luo and J. Yu, “Music source separation with band-split RNN”, <em>IEEE/ACM Trans. ASLP</em>, vol. 31, pp. 1893-1901, 2023.<br />
-[^2]: J. Yu, H. Chen, Y. Luo, R. Gu, and C. Weng, “High fidelity speech enhancement with band-split RNN,” in <em>Proc. Interspeech</em>, 2023, pp. 2483–2487.<br />
-[^3]: W. Zhang, K. Saijo, J.-w. Jung, C. Li, S. Watanabe, and Y. Qian, “Beyond performance plateaus: A comprehensive study on scalability in speech enhancement,” in <em>Proc. Interspeech</em>, 2024, pp. 1740-1744.  </p>
+<p>We implemented a streaming BSRNN with batch normalization. We followed [3] for the configurations of different sizes.  </p>
+<p>[1]: Y. Luo and J. Yu, “Music source separation with band-split RNN”, <em>IEEE/ACM Trans. ASLP</em>, vol. 31, pp. 1893-1901, 2023.<br />
+[2]: J. Yu, H. Chen, Y. Luo, R. Gu, and C. Weng, “High fidelity speech enhancement with band-split RNN,” in <em>Proc. Interspeech</em>, 2023, pp. 2483–2487.<br />
+[3]: W. Zhang, K. Saijo, J.-w. Jung, C. Li, S. Watanabe, and Y. Qian, “Beyond performance plateaus: A comprehensive study on scalability in speech enhancement,” in <em>Proc. Interspeech</em>, 2024, pp. 1740-1744.  </p>
 <h2 id="training">Training</h2>
 <ul>
 <li>Model: BSRNN-xxt</li>
@@ -118,11 +118,11 @@
   -p train.batch_size=64 valid.batch_size=64 \
   -f</code></pre>
 
-<p>Options:
-- -n (Required): Base directory to save configuration, tensorboard logs, and checkpoints.
-- -c (Optional): Path to configuration file. If not given, the configuration file in the base directory will be used.
-- -p (Optional): Parameters after this will update the configuration.
-- -f (Optional): If the base directory already exists and -c flag is given, an exception will be raised to avoid overwriting config file. However, enabling this option will force overwriting config file.</p>
+<p>Options:<br />
+- <code>-n</code> (Required): Base directory to save configuration, tensorboard logs, and checkpoints.<br />
+- <code>-c</code> (Optional): Path to configuration file. If not given, the configuration file in the base directory will be used.<br />
+- <code>-p</code> (Optional): Parameters after this will update the configuration.<br />
+- <code>-f</code> (Optional): If the base directory already exists and <code>-c</code> flag is given, an exception will be raised to avoid overwriting config file. However, enabling this option will force overwriting config file.  </p>
 <h2 id="resume-training">Resume Training</h2>
 <p>Suppose you stopped the training.<br />
 To load the saved checkpoint at <code>logs/vbd/16khz/bsrnn_xxt</code> and resume the training, use the code below:</p>

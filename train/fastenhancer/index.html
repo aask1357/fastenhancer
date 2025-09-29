@@ -87,7 +87,8 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="fastenhancer">FastEnhancer</h1>
-<p><a href="https://arxiv.org/abs/2509.21867">Paper</a></p>
+<p><a href="https://arxiv.org/abs/2509.21867">Paper</a> [1] | <a href="https://github.com/aask1357/fastenhancer">Github</a>  </p>
+<p>[1] S. Ahn, J. Han, B. J. Woo, and N. S. Kim, “FastEnhancer: Speed-optimized streaming neural speech enhancement,”, <em>arXiv:2509.21867</em>, 2025.  </p>
 <h2 id="training-fastenhancer-large-on-voicebank-demand-16khz">Training FastEnhancer-Large on Voicebank-Demand 16kHz</h2>
 <ul>
 <li>Model: FastEnhancer-Large</li>
@@ -125,11 +126,11 @@
   -p train.batch_size=16 valid.batch_size=16 pesq.batch_size=4 \
   -f</code></pre>
 
-<p>Options:
-- -n (Required): Base directory to save configuration, tensorboard logs, and checkpoints.
-- -c (Optional): Path to configuration file. If not given, the configuration file in the base directory will be used.
-- -p (Optional): Parameters after this will update the configuration.
-- -f (Optional): If the base directory already exists and -c flag is given, an exception will be raised to avoid overwriting config file. However, enabling this option will force overwriting config file.</p>
+<p>Options:<br />
+- <code>-n</code> (Required): Base directory to save configuration, tensorboard logs, and checkpoints.<br />
+- <code>-c</code> (Optional): Path to configuration file. If not given, the configuration file in the base directory will be used.<br />
+- <code>-p</code> (Optional): Parameters after this will update the configuration.<br />
+- <code>-f</code> (Optional): If the base directory already exists and <code>-c</code> flag is given, an exception will be raised to avoid overwriting config file. However, enabling this option will force overwriting config file.  </p>
 <h2 id="resume-training">Resume Training</h2>
 <p>Suppose you stopped the training.<br />
 To load the saved checkpoint at <code>logs/vbd/16khz/fastenhancer_l</code> and resume the training, use the code below:</p>

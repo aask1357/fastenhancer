@@ -87,9 +87,9 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="fspen">FSPEN</h1>
-<p><a href="https://ieeexplore.ieee.org/document/10446016">Paper</a>[^1]<br />
+<p><a href="https://ieeexplore.ieee.org/document/10446016">Paper</a>[1]<br />
 Since there's no official implementation, we faithfully re-implemented the model architecture following the paper and configured the training settings identically to FastEnhancer for fair comparison.</p>
-<p>[^1]: L. Yang, W. Liu, R. Meng, G. Lee, S. Baek, and H.-G. Moon, “Fspen: an ultra-lightweight network for real time speech enahncment,” in <em>Proc. IEEE ICASSP</em>, 2024, pp. 10671–10675.  </p>
+<p>[1]: L. Yang, W. Liu, R. Meng, G. Lee, S. Baek, and H.-G. Moon, “Fspen: an ultra-lightweight network for real time speech enahncment,” in <em>Proc. IEEE ICASSP</em>, 2024, pp. 10671–10675.  </p>
 <h2 id="training">Training</h2>
 <ul>
 <li>Model: FSPEN</li>
@@ -112,11 +112,11 @@ Since there's no official implementation, we faithfully re-implemented the model
   -p train.batch_size=64 valid.batch_size=64 \
   -f</code></pre>
 
-<p>Options:
-- -n (Required): Base directory to save configuration, tensorboard logs, and checkpoints.
-- -c (Optional): Path to configuration file. If not given, the configuration file in the base directory will be used.
-- -p (Optional): Parameters after this will update the configuration.
-- -f (Optional): If the base directory already exists and -c flag is given, an exception will be raised to avoid overwriting config file. However, enabling this option will force overwriting config file.</p>
+<p>Options:<br />
+- <code>-n</code> (Required): Base directory to save configuration, tensorboard logs, and checkpoints.<br />
+- <code>-c</code> (Optional): Path to configuration file. If not given, the configuration file in the base directory will be used.<br />
+- <code>-p</code> (Optional): Parameters after this will update the configuration.<br />
+- <code>-f</code> (Optional): If the base directory already exists and <code>-c</code> flag is given, an exception will be raised to avoid overwriting config file. However, enabling this option will force overwriting config file.  </p>
 <h2 id="resume-training">Resume Training</h2>
 <p>Suppose you stopped the training.<br />
 To load the saved checkpoint at <code>logs/vbd/16khz/fspen</code> and resume the training, use the code below:</p>
