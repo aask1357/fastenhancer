@@ -1,13 +1,13 @@
 # BSRNN
-- Original paper that proposed BSRNN: [paper](https://arxiv.org/abs/2209.15174)[^1]  
-- First paper that used BSRNN to noise suppression: [paper](https://arxiv.org/abs/2212.00406)[^2]  
-- BSRNN model size scaling: [paper](https://arxiv.org/abs/2406.04269)[^3] | [github](https://github.com/Emrys365/se-scaling)  
+- Original paper that proposed BSRNN: [Paper](https://arxiv.org/abs/2209.15174) [1]  
+- BSRNN applied to noise suppression: [Paper](https://arxiv.org/abs/2212.00406) [2]  
+- BSRNN model size scaling: [Paper](https://arxiv.org/abs/2406.04269) [3] | [Github](https://github.com/Emrys365/se-scaling)  
 
-We implemented a streaming BSRNN with batch normalization. We follow [2] for the configurations of different sizes.  
+We implemented a streaming BSRNN with batch normalization. We followed [3] for the configurations of different sizes.  
 
-[^1]: Y. Luo and J. Yu, “Music source separation with band-split RNN”, *IEEE/ACM Trans. ASLP*, vol. 31, pp. 1893-1901, 2023.  
-[^2]: J. Yu, H. Chen, Y. Luo, R. Gu, and C. Weng, “High fidelity speech enhancement with band-split RNN,” in *Proc. Interspeech*, 2023, pp. 2483–2487.  
-[^3]: W. Zhang, K. Saijo, J.-w. Jung, C. Li, S. Watanabe, and Y. Qian, “Beyond performance plateaus: A comprehensive study on scalability in speech enhancement,” in *Proc. Interspeech*, 2024, pp. 1740-1744.  
+[1]: Y. Luo and J. Yu, “Music source separation with band-split RNN”, *IEEE/ACM Trans. ASLP*, vol. 31, pp. 1893-1901, 2023.  
+[2]: J. Yu, H. Chen, Y. Luo, R. Gu, and C. Weng, “High fidelity speech enhancement with band-split RNN,” in *Proc. Interspeech*, 2023, pp. 2483–2487.  
+[3]: W. Zhang, K. Saijo, J.-w. Jung, C. Li, S. Watanabe, and Y. Qian, “Beyond performance plateaus: A comprehensive study on scalability in speech enhancement,” in *Proc. Interspeech*, 2024, pp. 1740-1744.  
 
 ## Training
 - Model: BSRNN-xxt
@@ -29,11 +29,11 @@ or
   -p train.batch_size=64 valid.batch_size=64 \
   -f</code></pre>
 
-Options:
-- -n (Required): Base directory to save configuration, tensorboard logs, and checkpoints.
-- -c (Optional): Path to configuration file. If not given, the configuration file in the base directory will be used.
-- -p (Optional): Parameters after this will update the configuration.
-- -f (Optional): If the base directory already exists and -c flag is given, an exception will be raised to avoid overwriting config file. However, enabling this option will force overwriting config file.
+Options:  
+- `-n` (Required): Base directory to save configuration, tensorboard logs, and checkpoints.  
+- `-c` (Optional): Path to configuration file. If not given, the configuration file in the base directory will be used.  
+- `-p` (Optional): Parameters after this will update the configuration.  
+- `-f` (Optional): If the base directory already exists and `-c` flag is given, an exception will be raised to avoid overwriting config file. However, enabling this option will force overwriting config file.  
 
 ## Resume Training
 Suppose you stopped the training.  

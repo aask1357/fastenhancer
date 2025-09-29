@@ -1,8 +1,8 @@
 # LiSenNet
-[Paper](https://ieeexplore.ieee.org/document/10446016)[^1] | [Github](https://github.com/hyyan2k/LiSenNet/tree/main)  
+[Paper](https://ieeexplore.ieee.org/document/10446016) [1] | [Github](https://github.com/hyyan2k/LiSenNet/tree/main)  
 The official implementation includes input normalization and Griffin-Lim, so it is not streamable. To make the model streamable, input normalization is removed, and instead of Griffin-Lim, the model predicts a complex mask. We configured the training settings identically to FastEnhancer for fair comparison.
 
-[^1]: H. Yan, J. Zhang, C. Fan, Y. Zhou, and P. Liu, “LiSenNet: Lightweight sub-band and dual-path modeling for real-time speech enhancement,” in *Proc. IEEE ICASSP*, 2025, pp. 1–5.  
+[1]: H. Yan, J. Zhang, C. Fan, Y. Zhou, and P. Liu, “LiSenNet: Lightweight sub-band and dual-path modeling for real-time speech enhancement,” in *Proc. IEEE ICASSP*, 2025, pp. 1–5.  
 
 ## Training
 - Model: LiSenNet
@@ -24,11 +24,11 @@ or
   -p train.batch_size=64 valid.batch_size=64 \
   -f</code></pre>
 
-Options:
-- -n (Required): Base directory to save configuration, tensorboard logs, and checkpoints.
-- -c (Optional): Path to configuration file. If not given, the configuration file in the base directory will be used.
-- -p (Optional): Parameters after this will update the configuration.
-- -f (Optional): If the base directory already exists and -c flag is given, an exception will be raised to avoid overwriting config file. However, enabling this option will force overwriting config file.
+Options:  
+- `-n` (Required): Base directory to save configuration, tensorboard logs, and checkpoints.  
+- `-c` (Optional): Path to configuration file. If not given, the configuration file in the base directory will be used.  
+- `-p` (Optional): Parameters after this will update the configuration.  
+- `-f` (Optional): If the base directory already exists and `-c` flag is given, an exception will be raised to avoid overwriting config file. However, enabling this option will force overwriting config file.  
 
 ## Resume Training
 Suppose you stopped the training.  

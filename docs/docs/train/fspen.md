@@ -1,8 +1,8 @@
 # FSPEN
-[Paper](https://ieeexplore.ieee.org/document/10446016)[^1]  
+[Paper](https://ieeexplore.ieee.org/document/10446016)[1]  
 Since there's no official implementation, we faithfully re-implemented the model architecture following the paper and configured the training settings identically to FastEnhancer for fair comparison.
 
-[^1]: L. Yang, W. Liu, R. Meng, G. Lee, S. Baek, and H.-G. Moon, “Fspen: an ultra-lightweight network for real time speech enahncment,” in *Proc. IEEE ICASSP*, 2024, pp. 10671–10675.  
+[1]: L. Yang, W. Liu, R. Meng, G. Lee, S. Baek, and H.-G. Moon, “Fspen: an ultra-lightweight network for real time speech enahncment,” in *Proc. IEEE ICASSP*, 2024, pp. 10671–10675.  
 
 ## Training
 - Model: FSPEN
@@ -24,11 +24,11 @@ or
   -p train.batch_size=64 valid.batch_size=64 \
   -f</code></pre>
 
-Options:
-- -n (Required): Base directory to save configuration, tensorboard logs, and checkpoints.
-- -c (Optional): Path to configuration file. If not given, the configuration file in the base directory will be used.
-- -p (Optional): Parameters after this will update the configuration.
-- -f (Optional): If the base directory already exists and -c flag is given, an exception will be raised to avoid overwriting config file. However, enabling this option will force overwriting config file.
+Options:  
+- `-n` (Required): Base directory to save configuration, tensorboard logs, and checkpoints.  
+- `-c` (Optional): Path to configuration file. If not given, the configuration file in the base directory will be used.  
+- `-p` (Optional): Parameters after this will update the configuration.  
+- `-f` (Optional): If the base directory already exists and `-c` flag is given, an exception will be raised to avoid overwriting config file. However, enabling this option will force overwriting config file.  
 
 ## Resume Training
 Suppose you stopped the training.  

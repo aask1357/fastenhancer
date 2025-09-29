@@ -66,10 +66,10 @@ data:
         dataloader_rms: -20         # dB -> dataloader will generate clean and noise with this rms
         snr_range: [-5, 20]         # dB
         noisy_rms_range: [-30, -10] # dB -> range of the final noisy speech's rms
-        voice_contained: 0.3        # seconds
-                                    # if active part of clean is less than this,
-                                    # then we'll assume that there's no voice in the clean,
-                                    # and set clean = 0
+        min_voice_activity: 0.3     # seconds
+                                    # If active part of a clean speech is 
+                                    # less than `min_voice_activity`,
+                                    # we'll load another clean file.
 train:
     test: False
     batch_size: 16

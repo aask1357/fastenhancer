@@ -79,7 +79,7 @@ class NSOnTheFlyDataset(data.Dataset):
         self.rms_window_size = int(_hp.rms_window_size * self.sr)
         self.activity_threshold = float(_hp.activity_threshold)
         self.target_rms = 10 ** (_hp.dataloader_rms / 20)
-        self.voice_contained = int(_hp.voice_contained / _hp.rms_window_size)   # samples
+        self.min_voice_activity = int(_hp.min_voice_activity / _hp.rms_window_size)   # samples
 
         _hp = hp[mode]
         self.segment_size: int = _hp.segment_size
@@ -121,7 +121,7 @@ class NSOnTheFlyDataset(data.Dataset):
     def __len__(self):
         return self.length
 
-    def rms(self, wav: np.ndarray) -> float:
+    def rms(self, wav: np.ndarray, min_activity) -> float:
         if not self.segmental_snr:
             return np.sqrt(np.square(wav).mean()).item()
 
@@ -131,8 +131,8 @@ class NSOnTheFlyDataset(data.Dataset):
 
         seg_rms = np.sqrt(np.square(wav).mean(1))       # [T']
         active = seg_rms > self.activity_threshold      # [T']
-        if active.sum() < self.voice_contained:
-            return float("inf")     # no active segment -> return inf -> zero-out @ self.normalize
+        if active.sum() < min_activity:
+            return 0.0
         active_seg_rms = (seg_rms * active).sum() / active.sum()
         return active_seg_rms.item()
 
@@ -142,7 +142,8 @@ class NSOnTheFlyDataset(data.Dataset):
     def gen_audio(
         self,
         base_dir: Path,
-        filelists: tp.List[str]
+        filelists: tp.List[str],
+        min_activity: float,
     ) -> tp.Tuple[np.ndarray, tp.List[str]]:
         audio_list = []
         filenames =[]
@@ -154,10 +155,14 @@ class NSOnTheFlyDataset(data.Dataset):
             audio = librosa.load(full_path, sr=self.sr)[0]
             filenames.append(file)
 
+            audio_rms = self.rms(audio, min_activity)
+            if audio_rms == 0.0:
+                continue
+            audio = self.normalize(audio, audio_rms)
             audio_len = len(audio)
             if remaining_length > audio_len:
-                audio_rms = self.rms(audio)
-                audio = self.normalize(audio, audio_rms)
+                # audio_rms = self.rms(audio)
+                # audio = self.normalize(audio, audio_rms)
                 remaining_length -= audio_len
                 silence_len = min(remaining_length, len(self.silence))
                 audio_list.extend([audio, self.silence[:silence_len]])
@@ -166,8 +171,8 @@ class NSOnTheFlyDataset(data.Dataset):
                 # 0 <= start_idx <= audio_len - remaining_length
                 start_idx = random.randint(0, audio_len - remaining_length)
                 audio = audio[start_idx:start_idx + remaining_length]
-                audio_rms = self.rms(audio)
-                audio = self.normalize(audio, audio_rms)
+                # audio_rms = self.rms(audio)
+                # audio = self.normalize(audio, audio_rms)
                 audio_list.append(audio)
                 remaining_length = 0
 
@@ -180,10 +185,18 @@ class NSOnTheFlyDataset(data.Dataset):
         data = {}
 
         if "clean" in self.keys:
-            data["clean"], clean_filenames = self.gen_audio(self.clean_dir, self.clean_filelist)
+            data["clean"], clean_filenames = self.gen_audio(
+                self.clean_dir,
+                self.clean_filelist,
+                self.min_voice_activity
+            )
 
         if "noise" in self.keys:
-            data["noise"], noise_filenames = self.gen_audio(self.noise_dir, self.noise_filelist)
+            data["noise"], noise_filenames = self.gen_audio(
+                self.noise_dir,
+                self.noise_filelist,
+                0.0
+            )
 
         if "rir" in self.keys:
             use_reverb = bool(np.random.random(1) < self.reverb_prob)
@@ -230,7 +243,7 @@ class SNRMixer(torch.nn.Module):
         dataloader_rms: int = -25,
         snr_range: tp.List[int] = [-5, 20],
         noisy_rms_range: tp.List[int] = [-35, -15],
-        voice_contained: float = 0.3,
+        min_voice_activity: float = 0.3,
         clipping_threshold: float = 1.0 - torch.finfo(torch.float32).eps,
     ):
         super().__init__()
@@ -242,7 +255,7 @@ class SNRMixer(torch.nn.Module):
         self.window_size = int(sr * rms_window_size)                # samples
         self.clipping_threshold = clipping_threshold
         self.rms_dataloader = 10 ** (dataloader_rms / 20)           # linear scale
-        self.voice_contained = int(voice_contained / rms_window_size)   # samples
+        self.min_voice_activity = int(min_voice_activity / rms_window_size) # samples
 
     def scaling_while_avoiding_clipping(
         self,
@@ -270,7 +283,7 @@ class SNRMixer(torch.nn.Module):
         active = rms > self.activity_threshold  # [B, T']
         num_active = active.sum(1)              # [B]
         active_rms = (active * rms).sum(1) / num_active.clamp(min=1e-5)   # [B]
-        mask = num_active >= self.voice_contained
+        mask = num_active >= self.min_voice_activity
         return active_rms.view(-1, 1), mask.view(-1, 1)  # [B, 1]
 
     def segmental_mix(
@@ -286,12 +299,9 @@ class SNRMixer(torch.nn.Module):
         self.rms_dataloader during dataset loading.
         However, clean may be convolved with RIR, so the rms may be
         different to self.rms_dataloader.
-
-        If clean contains active segments less than self.voice_contained, 
-        then we will assume there's no voice, and return clean=0 & noisy=noise
         """
         rms_clean, mask = self.active_rms(clean)    # [B, 1]
-        clean = clean * mask    # [B, T]: zero-out non-active utterances
+        # clean = clean * mask    # [B, T]: zero-out non-active utterances
         rms_noise = self.rms_dataloader
         scale = rms_clean / rms_noise * 10 ** (-snr / 20)   # [B, 1]
         noise = torch.where(mask, noise * scale, noise)     # [B, T]

@@ -1,5 +1,7 @@
 # FastEnhancer
-[Paper](https://arxiv.org/abs/2509.21867)
+[Paper](https://arxiv.org/abs/2509.21867) [1] | [Github](https://github.com/aask1357/fastenhancer)  
+
+[1] S. Ahn, J. Han, B. J. Woo, and N. S. Kim, “FastEnhancer: Speed-optimized streaming neural speech enhancement,”, *arXiv:2509.21867*, 2025.  
 
 ## Training FastEnhancer-Large on Voicebank-Demand 16kHz
 - Model: FastEnhancer-Large
@@ -34,11 +36,11 @@ or
   -p train.batch_size=16 valid.batch_size=16 pesq.batch_size=4 \
   -f</code></pre>
 
-Options:
-- -n (Required): Base directory to save configuration, tensorboard logs, and checkpoints.
-- -c (Optional): Path to configuration file. If not given, the configuration file in the base directory will be used.
-- -p (Optional): Parameters after this will update the configuration.
-- -f (Optional): If the base directory already exists and -c flag is given, an exception will be raised to avoid overwriting config file. However, enabling this option will force overwriting config file.
+Options:  
+- `-n` (Required): Base directory to save configuration, tensorboard logs, and checkpoints.  
+- `-c` (Optional): Path to configuration file. If not given, the configuration file in the base directory will be used.  
+- `-p` (Optional): Parameters after this will update the configuration.  
+- `-f` (Optional): If the base directory already exists and `-c` flag is given, an exception will be raised to avoid overwriting config file. However, enabling this option will force overwriting config file.  
 
 ## Resume Training
 Suppose you stopped the training.  
