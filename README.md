@@ -235,10 +235,10 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
     </tr>
   </tbody>
 </table>
-<p><sup>a</sup>Evaluated using the official checkpoint.<br>
-<sup>b</sup>Trained using the official training code. Not streamable because of input normalization and griffin-lim. Thus, RTFs are not reported.<br>
-<sup>c</sup>To make the model streamable, input normalization and griffin-lim are removed. Trained following the experimental setup of FastEnhancer.<br>
-<sup>d</sup>Re-implemented and trained following the experimental setup of FastEnhancer for a fair comparison.</p>
+<p><sup>a</sup> Evaluated using the official checkpoint.<br>
+<sup>b</sup> Trained using the official training code. Not streamable because of input normalization and griffin-lim. Thus, RTFs are not reported.<br>
+<sup>c</sup> To make the model streamable, input normalization and griffin-lim are removed. Trained following the experimental setup of FastEnhancer.<br>
+<sup>d</sup> Re-implemented and trained following the experimental setup of FastEnhancer for a fair comparison.</p>
 
 ## DNS-Challenge 16kHz
 Trained using DNS-Challenge-3 wideband training dataset.  

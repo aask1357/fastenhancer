@@ -32,7 +32,7 @@ def main(args):
     from utils import get_hparams, HParams
     from utils.data import get_dataset_dataloader
     from utils.scoreq_onnx import Scoreq
-    from models import get_wrapper
+    from wrappers import get_wrapper
 
     torch.set_num_threads(args.num_threads)
 
@@ -54,7 +54,7 @@ def main(args):
     # Load the model
     base_dir = os.path.join("logs", args.name)
     hps = get_hparams(f"{base_dir}/config.yaml", base_dir)
-    wrapper = get_wrapper(hps.model)(hps, device=args.device)
+    wrapper = get_wrapper(hps.wrapper)(hps, device=args.device)
     wrapper.load(epoch=args.epoch)
     wrapper.eval()
     # wrapper.remove_weight_reparameterizations()
@@ -74,10 +74,13 @@ def main(args):
     hps.pesq.batch_size = args.batch_size
     hps.pesq.num_workers = 0
     hps.data.pesq.transcript_dir = args.transcript_dir
+    keys = ["clean", "noisy", "wav_len"]
+    if args.wer:
+        keys.append("transcript")
     _, dataloader = get_dataset_dataloader(
         hps,
         mode="pesq",
-        keys=["clean", "noisy", "wav_len", "transcript"],
+        keys=keys,
     )
 
     # Prepare DNSMOS, Resampler
@@ -175,11 +178,11 @@ def main(args):
             ref = wav_clean_10khz[i, :wav_len_10khz]
             deg = wav_clean_hat_10khz[i, :wav_len_10khz]
             result = stoi(ref, deg, 10000, extended=False)
-            stoi_total += result * 100
+            stoi_total += result
 
             # ESTOI
             result = stoi(ref, deg, 10000, extended=True)
-            estoi_total += result * 100
+            estoi_total += result
 
             # print
             num_total += 1
@@ -193,8 +196,8 @@ def main(args):
                 f"{scoreq_total / num_total:.3f}, "
                 f"{sisdr_total / num_total:.1f}, "
                 f"{pesq_total / num_total:.2f}, "
-                f"{stoi_total / num_total:.1f}, "
-                f"{estoi_total / num_total:.1f}, "
+                f"{stoi_total / num_total:.3f}, "
+                f"{estoi_total / num_total:.3f}, "
                 f"{wer_total / num_total:>3.1f}",
                 end="", flush=True
             )
@@ -220,7 +223,7 @@ if __name__ == "__main__":
         "-d", "--device",
         type=str,
         default="cuda:0",
-        help="Device for running ASR inference. cpu | cuda:0.",
+        help="Device for running ASR inference. cpu | cuda:0. Default: cuda:0",
     )
     parser.add_argument(
         "-e", "--epoch",
@@ -249,7 +252,7 @@ if __name__ == "__main__":
         "--wer",
         type=str2bool,
         default=True,
-        help="Whether to calculate WER."
+        help="Whether to calculate WER. Default: True"
     )
     args = parser.parse_args()
 
