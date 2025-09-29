@@ -18,6 +18,46 @@ You can set those `interval`s in `config/*.yaml` files.
 - [FSPEN](fspen.md)
 - [LiSenNet](lisennet.md)
 
+## Cleaning checkpoints
+After training, many checkpoints are generated. In most cases, we only need the last one. If you want to remove all the checkpoints except the last one, This section is for you.  
+Suppose the log directory looks like this:
+<pre><code>logs
+├─ vbd
+|  ├─ fastenhancer_b
+|  |  ├─ 00020.pth
+|  |  ├─ ...
+|  |  ├─ 00480.pth
+|  |  └─ 00500.pth
+|  └─ fastenhancer_t
+|     ├─ 00020.pth
+|     ├─ ...
+|     ├─ 00480.pth
+|     └─ 00500.pth
+└─ dns
+   └─ fastenhancer_b
+      ├─ 00020.pth
+      ├─ ...
+      ├─ 00480.pth
+      └─ 00500.pth</code></pre>
+If you want to delete all checkpoints except the last one in `logs/vbd`, run the following code:
+<pre><code>python scripts/clean_checkpoints.py -n vbd --delete</code></pre>
+If you just want to check how many checkpoints you can delete, instead of actually deleting them, run without the `--delete` flag:
+<pre><code>python scripts/clean_checkpoints.py -n vbd</code></pre>
+
+After deleting the checkpoints in `logs/vbd`, the log directory will be:
+<pre><code>logs
+├─ vbd
+|  ├─ fastenhancer_b
+|  |  └─ 00500.pth
+|  └─ fastenhancer_t
+|     └─ 00500.pth
+└─ dns
+   └─ fastenhancer_b
+      ├─ 00020.pth
+      ├─ ...
+      ├─ 00480.pth
+      └─ 00500.pth</code></pre>
+
 ## Experience sharing
 Except for Voicebank-Demand at 16kHz sampling rate, we recommend not to use PESQLoss. The reasons are:  
 1. It harms stable training.  

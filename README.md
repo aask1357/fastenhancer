@@ -1,6 +1,7 @@
 # Introduction
 Official repository of "FastEnhancer: Speed-Optimized Streaming Neural Speech Enhancement."  
-[Paper]() | [Documentation](https://aask1357.github.io/fastenhancer/)
+[Paper](https://arxiv.org/abs/2509.21867) | [Documentation](https://aask1357.github.io/fastenhancer/)
+
 # Install
 Please refer to [document](https://aask1357.github.io/fastenhancer/installation).
 

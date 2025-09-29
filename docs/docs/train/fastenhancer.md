@@ -1,5 +1,5 @@
 # FastEnhancer
-[Paper]()
+[Paper](https://arxiv.org/abs/2509.21867)
 
 ## Training FastEnhancer-Large on Voicebank-Demand 16kHz
 - Model: FastEnhancer-Large
