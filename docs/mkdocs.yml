@@ -18,6 +18,6 @@ nav:
         - FastEnhancer: train/fastenhancer.md
         - BSRNN: train/bsrnn.md
         - FSPEN: train/fspen.md
-        - LiSenNet: train/lisenet.md
+        - LiSenNet: train/lisennet.md
     - Objective Metrics: metrics.md
     - ONNX: onnx.md
