@@ -1,6 +1,6 @@
 # FastEnhancer
 
-[github](https://github.com/aask1357/fastenhancer) | [paper]().
+[github](https://github.com/aask1357/fastenhancer) | [paper](https://arxiv.org/abs/2509.21867).
 
 ## Contents
 
