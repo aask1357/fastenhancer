@@ -15,7 +15,7 @@ model_kwargs:
     window: hann
     input_compression: 0.3
 data:
-    dataset: VoiceBank-Demand
+    dataset: NoiseSuppression
     train:
         clean_dir: "/home/shahn/Datasets/voicebank-demand/16k/clean_trainset_28spk_wav"
         noisy_dir: "/home/shahn/Datasets/voicebank-demand/16k/noisy_trainset_28spk_wav"

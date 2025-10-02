@@ -29,7 +29,7 @@ model_kwargs:
     normalize_final_conv: True
     weight_norm: True
 data:
-    dataset: VoiceBank-Demand
+    dataset: NoiseSuppression
     train:
         clean_dir: "/home/shahn/Datasets/voicebank-demand/16k/clean_trainset_28spk_wav"
         noisy_dir: "/home/shahn/Datasets/voicebank-demand/16k/noisy_trainset_28spk_wav"
