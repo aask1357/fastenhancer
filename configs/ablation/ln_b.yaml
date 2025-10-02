@@ -29,6 +29,7 @@ model_kwargs:
     final_scale_init: "one"
     weight_norm: True
     resnet: False
+wrapper: ns
 data:
     dataset: NoiseSuppression
     train:

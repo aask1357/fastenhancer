@@ -29,6 +29,7 @@ model_kwargs:
     normalize_final_conv: True
     final_scale_init: "one"
     weight_norm: True
+wrapper: ns
 data:
     dataset: NoiseSuppression
     train:

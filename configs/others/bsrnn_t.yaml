@@ -9,6 +9,7 @@ model_kwargs:
     win_size: 512
     window: hann
     input_compression: 0.3
+wrapper: ns
 data:
     dataset: NoiseSuppression
     train:
