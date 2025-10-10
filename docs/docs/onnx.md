@@ -25,7 +25,7 @@ If you downloaded a wav2wav version in `onnx/fastenhancer_t.onnx`, run the follo
 If you downloaded a spec2spec version in `onnx/fastenhancer_t_spec.onnx`, run the following code:
 <pre><code>python -m scripts.test_onnx_spec --onnx-path onnx/fastenhancer_t_spec.onnx</code></pre>
 
-There are some model-specific settings.
+There are some model-specific settings.  
 - For FastEnhancer-M, you should set `--hop-size 160`:
   <pre><code>python -m scripts.test_onnx --onnx-path onnx/fastenhancer_m.onnx --hop-size 160</code></pre>
 - For FastEnhancer-L, you should set `--hop-size 100`:

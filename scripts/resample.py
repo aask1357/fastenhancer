@@ -14,10 +14,11 @@ def resample(
     to_dir: Path,
     from_file: Path,
     sr: int,
-    to_extension: str
+    to_extension: str,
+    res_type: str,
 ) -> int:
     try:
-        wav, _ = librosa.load(str(from_file), sr=sr)
+        wav, _ = librosa.load(str(from_file), sr=sr, res_type=res_type)
         wav_max = np.max(np.abs(wav))
         if wav_max > 1.0:
             wav = wav / wav_max * 0.99
@@ -70,6 +71,13 @@ if __name__=="__main__":
         type=int,
         default=32
     )
+    parser.add_argument(
+        "--res-type",
+        type=str,
+        default="soxr_hq",
+        choices=["soxr_hq", "soxr_vhq", "sinc_best", "kaiser_best", "polyphase"],
+        help="Resample type. Default: soxr_hq"
+    )
     args = parser.parse_args()
     
     from_dir = Path(args.from_dir)
@@ -84,7 +92,8 @@ if __name__=="__main__":
     with ProcessPoolExecutor(max_workers=num_workers) as e:
         for file in tqdm(filelist, desc="Submitting", dynamic_ncols=True, smoothing=0):
             futures.append(
-                e.submit(resample, from_dir, to_dir, file, args.to_sr, args.to_extension)
+                e.submit(resample, from_dir, to_dir, file, args.to_sr,
+                         args.to_extension, args.res_type)
             )
         for idx, future in tqdm(
             enumerate(as_completed(futures), start=1),

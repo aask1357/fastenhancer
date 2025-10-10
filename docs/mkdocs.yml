@@ -21,5 +21,7 @@ nav:
         - LiSenNet: train/lisennet.md
     - Objective Metrics:
         - metrics.md
+    - PyTorch Inference:
+        - pytorch.md
     - ONNX:
         - onnx.md

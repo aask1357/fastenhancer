@@ -20,6 +20,7 @@
         * [LiSenNet](train/lisennet.md)
     * [Experience sharing](train/index.md#experience-sharing)
 * [Calculating objevtice metrics](metrics.md)
+* [PyTorch inference](pytorch.md)
 * [ONNXRuntime](onnx.md)
     * [Exporting to ONNX and executing ONNXRuntime](onnx.md#exporting-to-onnx-and-executing-onnxruntime)
     * [Executing ONNXRuntime](onnx.md#executing-onnxruntime)

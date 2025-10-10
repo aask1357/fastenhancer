@@ -65,7 +65,7 @@ train:
     persistent_workers: True
     clip_grad: null
     seed: 1
-    plot_param_and_grad: True
+    plot_param_and_grad: False
     losses:
         mag_mse:
             weight: 0.3

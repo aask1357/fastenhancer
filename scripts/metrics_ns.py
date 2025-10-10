@@ -186,9 +186,13 @@ def main(args):
 
             # print
             num_total += 1
-            print(
-                f"\r({num_total}/{len(dataloader.dataset)}) "
-                "[p808_mos, sig, bak, ovr, scoreq, sisdr, pesq, stoi, estoi, wer]: "
+            out = f"\r({num_total}/{len(dataloader.dataset)}) "
+            if args.wer:
+                out = f"{out}[p808_mos, sig, bak, ovr, scoreq, sisnr, pesq, stoi, estoi, wer]: "
+            else:
+                out = f"{out}[p808_mos, sig, bak, ovr, scoreq, sisnr, pesq, stoi, estoi]: "
+            out = (
+                f"{out}"
                 f"{dnsmos_total[0] / num_total:.2f}, "
                 f"{dnsmos_total[1] / num_total:.2f}, "
                 f"{dnsmos_total[2] / num_total:.2f}, "
@@ -197,10 +201,11 @@ def main(args):
                 f"{sisdr_total / num_total:.1f}, "
                 f"{pesq_total / num_total:.2f}, "
                 f"{stoi_total / num_total:.3f}, "
-                f"{estoi_total / num_total:.3f}, "
-                f"{wer_total / num_total:>3.1f}",
-                end="", flush=True
+                f"{estoi_total / num_total:.3f}"
             )
+            if args.wer:
+                out = f"{out}, {wer_total / num_total:>3.1f}"
+            print(out, end="", flush=True)
     out = f"\n{args.name}: "
     for score in (
         dnsmos_total[0], dnsmos_total[1], dnsmos_total[2],
@@ -208,7 +213,10 @@ def main(args):
         stoi_total, estoi_total,
     ):
         out = f"{out}{score / num_total:.6f}, "
-    print(f"{out}{wer_total / num_total:>3.6f}")
+    if args.wer:
+        print(f"{out}{wer_total / num_total:>3.6f}")
+    else:
+        print(out[:-2])  # Remove the last comma and space
 
 
 if __name__ == "__main__":
