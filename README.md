@@ -248,7 +248,8 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
 * Trained using DNS-Challenge-3 wideband training dataset.
   * Without `emotional_speech` and `singing_voice`.
   * With VCTK-0.92 clean speech except `p232` and `p257` speakers.
-  * RIRs were not convolved to the clean speech.  
+  * RIRs were not convolved to the clean speech.
+  * Unlike in Voicebank-Demand, we didn't use PESQLoss.
 * Tested using DNS-Challenge-1 dev-testset-synthetic-no-reverb dataset.  
 
 <p align="center"><b>Table 2.</b> Performance on DNS-Challenge1 dev-testset-synthetic-no-reverb.</p>
