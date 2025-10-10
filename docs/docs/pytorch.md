@@ -2,7 +2,7 @@
 In this page, we provide an example script that enhances all audio files in a given directory using a pre-trained model and saves the output to the given directory.  
 Lets assume that  
 - A model checkpoint is in `logs/fastenhancer_l`.  
-- Input noisy audio files are in '~/Datasets/noisy'.
+- Input noisy audio files are in '~/Datasets/noisy'.  
 - You want to save the output enhanced audio files in 'enhanced'.
 
 Then, run the following code:  
