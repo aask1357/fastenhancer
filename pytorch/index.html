@@ -9,22 +9,22 @@
       
       
       
-        <link rel="prev" href="../bsrnn/">
+        <link rel="prev" href="../metrics/">
       
       
-        <link rel="next" href="../lisennet/">
+        <link rel="next" href="../onnx/">
       
       
-      <link rel="icon" href="../../assets/images/favicon.png">
+      <link rel="icon" href="../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.20">
     
     
       
-        <title>FSPEN - FastEnhancer</title>
+        <title>PyTorch Inference - FastEnhancer</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.e53b48f4.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.e53b48f4.min.css">
       
       
 
@@ -43,7 +43,7 @@
       
     
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -62,7 +62,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#fspen" class="md-skip">
+        <a href="#pytorch-inference" class="md-skip">
           Skip to content
         </a>
       
@@ -78,7 +78,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="FastEnhancer" class="md-header__button md-logo" aria-label="FastEnhancer" data-md-component="logo">
+    <a href=".." title="FastEnhancer" class="md-header__button md-logo" aria-label="FastEnhancer" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -98,7 +98,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              FSPEN
+              PyTorch Inference
             
           </span>
         </div>
@@ -176,7 +176,7 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="FastEnhancer" class="md-nav__button md-logo" aria-label="FastEnhancer" data-md-component="logo">
+    <a href=".." title="FastEnhancer" class="md-nav__button md-logo" aria-label="FastEnhancer" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -194,7 +194,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../.." class="md-nav__link">
+      <a href=".." class="md-nav__link">
         
   
   
@@ -236,7 +236,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../installation/" class="md-nav__link ">
+            <a href="../installation/" class="md-nav__link ">
               
   
   
@@ -271,7 +271,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../installation/training/" class="md-nav__link">
+      <a href="../installation/training/" class="md-nav__link">
         
   
   
@@ -323,7 +323,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../dataset/" class="md-nav__link ">
+            <a href="../dataset/" class="md-nav__link ">
               
   
   
@@ -358,7 +358,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../dataset/voicebank-demand/" class="md-nav__link">
+      <a href="../dataset/voicebank-demand/" class="md-nav__link">
         
   
   
@@ -381,7 +381,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../dataset/dns-challenge/" class="md-nav__link">
+      <a href="../dataset/dns-challenge/" class="md-nav__link">
         
   
   
@@ -408,8 +408,6 @@
       
   
   
-    
-  
   
   
     
@@ -431,15 +429,15 @@
     
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../" class="md-nav__link ">
+            <a href="../train/" class="md-nav__link ">
               
   
   
@@ -458,7 +456,7 @@
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             Training
@@ -474,7 +472,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../fastenhancer/" class="md-nav__link">
+      <a href="../train/fastenhancer/" class="md-nav__link">
         
   
   
@@ -497,7 +495,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../bsrnn/" class="md-nav__link">
+      <a href="../train/bsrnn/" class="md-nav__link">
         
   
   
@@ -517,32 +515,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    FSPEN
-    
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../train/fspen/" class="md-nav__link">
         
   
   
@@ -553,62 +529,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#training" class="md-nav__link">
-    <span class="md-ellipsis">
-      Training
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#resume-training" class="md-nav__link">
-    <span class="md-ellipsis">
-      Resume Training
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#test-the-training-code" class="md-nav__link">
-    <span class="md-ellipsis">
-      Test the training code
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#about-optimizer_groups" class="md-nav__link">
-    <span class="md-ellipsis">
-      About optimizer_groups
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -621,7 +541,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../lisennet/" class="md-nav__link">
+      <a href="../train/lisennet/" class="md-nav__link">
         
   
   
@@ -693,7 +613,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../metrics/" class="md-nav__link">
+      <a href="../metrics/" class="md-nav__link">
         
   
   
@@ -720,8 +640,10 @@
       
   
   
+    
   
   
+  
     
     
       
@@ -731,11 +653,11 @@
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
         
           
           <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
@@ -751,7 +673,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             PyTorch Inference
@@ -762,10 +684,19 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../pytorch/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -776,6 +707,7 @@
   
 
       </a>
+      
     </li>
   
 
@@ -837,7 +769,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../onnx/" class="md-nav__link">
+      <a href="../onnx/" class="md-nav__link">
         
   
   
@@ -880,50 +812,6 @@
     
   
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#training" class="md-nav__link">
-    <span class="md-ellipsis">
-      Training
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#resume-training" class="md-nav__link">
-    <span class="md-ellipsis">
-      Resume Training
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#test-the-training-code" class="md-nav__link">
-    <span class="md-ellipsis">
-      Test the training code
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#about-optimizer_groups" class="md-nav__link">
-    <span class="md-ellipsis">
-      About optimizer_groups
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -938,57 +826,14 @@
 
 
 
-<h1 id="fspen">FSPEN</h1>
-<p><a href="https://ieeexplore.ieee.org/document/10446016">Paper</a>[1]<br />
-Since there's no official implementation, we faithfully re-implemented the model architecture following the paper and configured the training settings identically to FastEnhancer for fair comparison.</p>
-<p>[1]: L. Yang, W. Liu, R. Meng, G. Lee, S. Baek, and H.-G. Moon, “Fspen: an ultra-lightweight network for real time speech enahncment,” in <em>Proc. IEEE ICASSP</em>, 2024, pp. 10671–10675.  </p>
-<h2 id="training">Training</h2>
-<ul>
-<li>Model: FSPEN</li>
-<li>Dataset: <a href="../../dataset/voicebank-demand/">Voicebank-Demand</a> at 16kHz sampling rate. </li>
-<li>Number of GPUs: 1</li>
-<li>Batch size: 64</li>
-<li>Mixed-precision training with fp16: False</li>
-<li>Path to save config, tensorboard logs, and checkpoints: <code>logs/vbd/16khz/fspen</code></li>
-</ul>
-<pre><code>CUDA_VISIBLE_DEVICES=0 python train.py \
-  -n vbd/16khz/fspen \
-  -c configs/others/fspen.yaml \
-  -p train.batch_size=64 valid.batch_size=64 \
-  -f</code></pre>
-<p>or</p>
-<pre><code>CUDA_VISIBLE_DEVICES=0 torchrun --standalone --nproc_per_node=1 \
-  train_torchrun.py \
-  -n vbd/16khz/fspen \
-  -c configs/others/fspen.yaml \
-  -p train.batch_size=64 valid.batch_size=64 \
-  -f</code></pre>
-
-<p>Options:<br />
-- <code>-n</code> (Required): Base directory to save configuration, tensorboard logs, and checkpoints.<br />
-- <code>-c</code> (Optional): Path to configuration file. If not given, the configuration file in the base directory will be used.<br />
-- <code>-p</code> (Optional): Parameters after this will update the configuration.<br />
-- <code>-f</code> (Optional): If the base directory already exists and <code>-c</code> flag is given, an exception will be raised to avoid overwriting config file. However, enabling this option will force overwriting config file.  </p>
-<h2 id="resume-training">Resume Training</h2>
-<p>Suppose you stopped the training.<br />
-To load the saved checkpoint at <code>logs/vbd/16khz/fspen</code> and resume the training, use the code below:</p>
-<pre><code>CUDA_VISIBLE_DEVICES=0 python train.py \
-  -n vbd/16khz/fspen</code></pre>
-<p>or</p>
-<pre><code>CUDA_VISIBLE_DEVICES=0 torchrun --standalone --nproc_per_node=1 \
-  train_torchrun.py \
-  -n vbd/16khz/fspen</code></pre>
-
-<h2 id="test-the-training-code">Test the training code</h2>
-<p>Before you start training, we recommend to run the following test code:</p>
-<pre><code>CUDA_VISIBLE_DEVICES=0 python train.py \
-  -n delete_it \
-  -c configs/others/fspen.yaml \
-  -p train.test=True pesq.interval=1 \
-  -f</code></pre>
-<p>By setting <code>train.test=True</code>, it will execute a training code for only 10 steps. Then it will execute a validation code. Finally, by setting <code>pesq.interval=1</code>, it will execute a code for calculating objective metrics and terminate. If the code runs well, you are ready to begin training. You can delete <code>logs/delete_it</code> directory after the test.</p>
-<h2 id="about-optimizer_groups">About optimizer_groups</h2>
-<p>In <code>configs/fastenhancer/l.yaml</code>, take a look at <code>train.optimizer_groups</code>. There are only two scale-invariant parameters in FSPEN, and we manually set them.</p>
+<h1 id="pytorch-inference">PyTorch Inference</h1>
+<p>In this page, we provide an example script that enhances all audio files in a given directory using a pre-trained model and saves the output to the given directory.<br />
+Lets assume that<br />
+- A model checkpoint is in <code>logs/fastenhancer_l</code>.<br />
+- Input noisy audio files are in '~/Datasets/noisy'.
+- You want to save the output enhanced audio files in 'enhanced'.</p>
+<p>Then, run the following code:  </p>
+<pre><code>CUDA_VISIBLE_DEVIECS=0 python -m scripts.test_pytorch -n fastenhancer_l -i ~/Datasets/noisy -o enhanced</code></pre>
 
 
 
@@ -1037,10 +882,10 @@ To load the saved checkpoint at <code>logs/vbd/16khz/fspen</code> and resume the
     
     
       
-      <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.indexes", "content.code.copy"], "search": "../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"base": "..", "features": ["navigation.indexes", "content.code.copy"], "search": "../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      <script src="../assets/javascripts/bundle.f55a23d4.min.js"></script>
       
     
   </body>
