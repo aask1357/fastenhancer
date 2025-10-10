@@ -13,9 +13,12 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/train).
 
 # Inference
 ## PyTorch Inference
-Download link for the pytorch checkpoints and tensorboard logs will be provided soon.  
+Pytorch checkpoints and tensorboard logs are provided in [releases](https://github.com/aask1357/fastenhancer/releases).  
 Please refer to [document](https://aask1357.github.io/fastenhancer/metrics) for calculating objective metrics.  
+Please refer to [document](https://aask1357.github.io/fastenhancer/pytorch) for pytorch inference.
+
 ## ONNXRuntime Inference
+ONNX models are provided in [releases](https://github.com/aask1357/fastenhancer/releases).  
 Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for streaming inference using ONNXRuntime. 
 
 # Results
@@ -242,6 +245,132 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
 <sup>d</sup> Re-implemented and trained following the experimental setup of FastEnhancer for a fair comparison.</p>
 
 ## DNS-Challenge 16kHz
-Trained using DNS-Challenge-3 wideband training dataset.  
-Tested using DNS-Challenge-1 dev-testset-synthetic dataset.  
-To be added
+* Trained using DNS-Challenge-3 wideband training dataset.
+  * Without `emotional_speech` and `singing_voice`.
+  * With VCTK-0.92 clean speech except `p232` and `p257` speakers.
+  * RIRs were not convolved to the clean speech.  
+* Tested using DNS-Challenge-1 dev-testset-synthetic-no-reverb dataset.  
+
+<p align="center"><b>Table 2.</b> Performance on DNS-Challenge1 dev-testset-synthetic-no-reverb.</p>
+<table>
+  <thead>
+    <tr>
+      <th rowspan="2">Model</th>
+      <th rowspan="2">Para.<br>(K)</th>
+      <th rowspan="2">MACs</th>
+      <th rowspan="2">RTF<br>(Xeon)</th>
+      <th rowspan="2">RTF<br>(M1)</th>
+      <th rowspan="2">DNSMOS<br>(P.808)</th>
+      <th colspan="3">DNSMOS (P.835)</th>
+      <th rowspan="2">SCOREQ</th>
+      <th rowspan="2">SISDR</th>
+      <th rowspan="2">PESQ</th>
+      <th rowspan="2">STOI</th>
+      <th rowspan="2">ESTOI</th>
+    </tr>
+    <tr>
+      <th>SIG</th>
+      <th>BAK</th>
+      <th>OVL</th>
+    </tr>
+  </thead>
+  <tbody align=center>
+    <tr>
+      <td>GTCRN<sup>a</sup></td>
+      <td>24</td>
+      <td><strong>40M</strong></td>
+      <td>0.060</td>
+      <td>0.042</td>
+      <td>3.85</td>
+      <td>3.35</td>
+      <td>3.98</td>
+      <td>3.05</td>
+      <td>0.551</td>
+      <td>14.8</td>
+      <td>2.26</td>
+      <td>0.934</td>
+      <td>0.871</td>
+    </tr>
+    <tr>
+      <td><i>FastEnhancer</i>_T</td>
+      <td><strong>22</strong></td>
+      <td>55M</td>
+      <td><strong>0.012</strong></td>
+      <td><strong>0.013</strong></td>
+      <td>3.81</td>
+      <td>3.35</td>
+      <td>4.07</td>
+      <td>3.10</td>
+      <td>0.522</td>
+      <td>15.4</td>
+      <td>2.43</td>
+      <td>0.940</td>
+      <td>0.879</td>
+    </tr>
+    <tr>
+      <td><i>FastEnhancer</i>_B</td>
+      <td>92</td>
+      <td>262M</td>
+      <td>0.022</td>
+      <td>0.026</td>
+      <td>3.92</td>
+      <td>3.43</td>
+      <td>4.12</td>
+      <td>3.20</td>
+      <td>0.396</td>
+      <td>16.7</td>
+      <td>2.69</td>
+      <td>0.953</td>
+      <td>0.903</td>
+    </tr>
+    <tr>
+      <td><i>FastEnhancer</i>_S</td>
+      <td>195</td>
+      <td>664M</td>
+      <td>0.034</td>
+      <td>0.048</td>
+      <td>3.96</td>
+      <td>3.46</td>
+      <td>4.13</td>
+      <td>3.23</td>
+      <td>0.373</td>
+      <td>17.5</td>
+      <td>2.79</td>
+      <td>0.960</td>
+      <td>0.914</td>
+    </tr>
+    <tr>
+      <td><i>FastEnhancer</i>_M</td>
+      <td>492</td>
+      <td>2.9G</td>
+      <td>0.101</td>
+      <td>0.173</td>
+      <td>3.98</td>
+      <td>3.48</td>
+      <td>4.14</td>
+      <td>3.26</td>
+      <td>0.345</td>
+      <td>18.4</td>
+      <td>2.78</td>
+      <td>0.965</td>
+      <td>0.924</td>
+    </tr>
+    <tr>
+      <td><i>FastEnhancer</i>_L</td>
+      <td>1105</td>
+      <td>11G</td>
+      <td>0.313</td>
+      <td>0.632</td>
+      <td><strong>4.02</strong></td>
+      <td><strong>3.51</strong></td>
+      <td><strong>4.16</strong></td>
+      <td><strong>3.29</strong></td>
+      <td><strong>0.298</strong></td>
+      <td><strong>19.5</strong></td>
+      <td><strong>2.94</strong></td>
+      <td><strong>0.971</strong></td>
+      <td><strong>0.935</strong></td>
+    </tr>
+  </tbody>
+</table>
+<p><sup>a</sup> Evaluated using the official checkpoint. It should be noted that this model was trained for both noise suppression and de-reverberation, whereas FastEnhancers were trained only for noise suppression. If GTCRN is trained for noise suppression only, its performance may be higher.<br>
