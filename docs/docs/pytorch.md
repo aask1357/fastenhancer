@@ -6,4 +6,4 @@ Lets assume that
 - You want to save the output enhanced audio files in `enhanced`.
 
 Then, run the following code:  
-<pre><code>CUDA_VISIBLE_DEVIECS=0 python -m scripts.test_pytorch -n fastenhancer_l -i ~/Datasets/noisy -o enhanced</code></pre>
+<pre><code>CUDA_VISIBLE_DEVICES=0 python -m scripts.test_pytorch -n fastenhancer_l -i ~/Datasets/noisy -o enhanced</code></pre>
