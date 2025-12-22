@@ -23,7 +23,7 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
 
 # Results
 ## Voicebank-Demand 16kHz
-
+* Except for GTCRN, we trained each model five times with five different seed and report the average scores.
 <p align="center"><b>Table 1.</b> Performance on Voicebank-Demand testset.</p>
 <table>
   <thead>
@@ -241,8 +241,8 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
 </table>
 <p><sup>a</sup> Evaluated using the official checkpoint.<br>
 <sup>b</sup> Trained using the official training code. Not streamable because of input normalization and griffin-lim. Thus, RTFs are not reported.<br>
-<sup>c</sup> To make the model streamable, input normalization and griffin-lim are removed. Trained following the experimental setup of FastEnhancer.<br>
-<sup>d</sup> Re-implemented and trained following the experimental setup of FastEnhancer for a fair comparison.</p>
+<sup>c</sup> To make the model streamable, input normalization and griffin-lim are removed. Trained following the experimental setup of FastEnhancer (same loss function, same optimizer, etc. Only differences are the model architectures).<br>
+<sup>d</sup> Re-implemented and trained following the experimental setup of FastEnhancer (same loss function, same optimizer, etc. Only differences are the model architectures).</p>
 
 ## DNS-Challenge 16kHz
 * Trained using DNS-Challenge-3 wideband training dataset.
@@ -250,7 +250,8 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
   * With VCTK-0.92 clean speech except `p232` and `p257` speakers.
   * RIRs were not convolved to the clean speech.
   * Unlike in Voicebank-Demand, we didn't use PESQLoss.
-* Tested using DNS-Challenge-1 dev-testset-synthetic-no-reverb dataset.  
+* Tested using DNS-Challenge-1 dev-testset-synthetic-no-reverb dataset.
+* We trained each model only once with one random seed.  
 
 <p align="center"><b>Table 2.</b> Performance on DNS-Challenge1 dev-testset-synthetic-no-reverb.</p>
 <table>
@@ -292,6 +293,71 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
       <td>0.934</td>
       <td>0.871</td>
     </tr>
+    <tr>
+      <td>LiSenNet<sup>b</sup></td>
+      <td>37</td>
+      <td><strong>56M</strong></td>
+      <td>0.034</td>
+      <td>0.028</td>
+      <td>3.82</td>
+      <td>3.39</td>
+      <td>4.08</td>
+      <td>3.14</td>
+      <td>0.487</td>
+      <td>16.3</td>
+      <td>2.58</td>
+      <td>0.947</td>
+      <td>0.893</td>
+    </tr>
+    <tr>
+      <td>FSPEN<sup>b</sup></td>
+      <td>79</td>
+      <td><strong>64M</strong></td>
+      <td>0.046</td>
+      <td>0.038</td>
+      <td>3.82</td>
+      <td>3.37</td>
+      <td>4.09</td>
+      <td>3.13</td>
+      <td>0.510</td>
+      <td>15.8</td>
+      <td>2.43</td>
+      <td>0.943</td>
+      <td>0.885</td>
+    </tr>
+    <tr>
+      <td>BSRNN<sup>b</sup></td>
+      <td>334</td>
+      <td><strong>245M</strong></td>
+      <td>0.059</td>
+      <td>0.062</td>
+      <td>3.89</td>
+      <td>3.41</td>
+      <td>4.11</td>
+      <td>3.18</td>
+      <td>0.441</td>
+      <td><strong>16.7</strong></td>
+      <td>2.61</td>
+      <td>0.951</td>
+      <td>0.901</td>
+    </tr>
+    <tr>
+      <td><i>FastEnhancer</i>_B</td>
+      <td>92</td>
+      <td>262M</td>
+      <td><strong>0.022</strong></td>
+      <td><strong>0.026</strong></td>
+      <td><strong>3.92</strong></td>
+      <td><strong>3.43</strong></td>
+      <td><strong>4.12</strong></td>
+      <td><strong>3.20</strong></td>
+      <td><strong>0.396</strong></td>
+      <td><strong>16.7</strong></td>
+      <td><strong>2.69</strong></td>
+      <td><strong>0.953</strong></td>
+      <td><strong>0.903</strong></td>
+    </tr>
+    <tr><td colspan=14></td></tr>
     <tr>
       <td><i>FastEnhancer</i>_T</td>
       <td><strong>22</strong></td>
@@ -375,3 +441,4 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
   </tbody>
 </table>
 <p><sup>a</sup> Evaluated using the official checkpoint. It should be noted that this model was trained for both noise suppression and de-reverberation, whereas FastEnhancers were trained only for noise suppression. If GTCRN is trained for noise suppression only, its performance may be higher.<br>
+<sup>b</sup> Re-implemented and trained following the experimental setup of FastEnhancer (same loss function, same optimizer, etc. Only differences are the model architectures).</p>
