@@ -279,7 +279,7 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
   <tbody align=center>
     <tr>
       <td>GTCRN<sup>a</sup></td>
-      <td>24</td>
+      <td><strong>24</strong></td>
       <td><strong>40M</strong></td>
       <td>0.060</td>
       <td>0.042</td>
@@ -296,7 +296,7 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
     <tr>
       <td>LiSenNet<sup>b</sup></td>
       <td>37</td>
-      <td><strong>56M</strong></td>
+      <td>56M</td>
       <td>0.034</td>
       <td>0.028</td>
       <td>3.82</td>
@@ -312,7 +312,7 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
     <tr>
       <td>FSPEN<sup>b</sup></td>
       <td>79</td>
-      <td><strong>64M</strong></td>
+      <td>64M</td>
       <td>0.046</td>
       <td>0.038</td>
       <td>3.82</td>
@@ -328,7 +328,7 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
     <tr>
       <td>BSRNN<sup>b</sup></td>
       <td>334</td>
-      <td><strong>245M</strong></td>
+      <td>245M</td>
       <td>0.059</td>
       <td>0.062</td>
       <td>3.89</td>
@@ -361,7 +361,7 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
     <tr>
       <td><i>FastEnhancer</i>_T</td>
       <td><strong>22</strong></td>
-      <td>55M</td>
+      <td><strong>55M</strong></td>
       <td><strong>0.012</strong></td>
       <td><strong>0.013</strong></td>
       <td>3.81</td>
