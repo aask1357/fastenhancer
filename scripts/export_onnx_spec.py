@@ -54,6 +54,7 @@ def main(args):
     print("Preparing input...", end=" ")
     wav, _ = librosa.load(args.audio_path, sr=wrapper.sr)
     wav = torch.from_numpy(wav).view(1, -1).clamp(min=-1, max=1)
+    T = wav.shape[1]
     if not args.test_streaming and not args.test_remove_weight_reparam:
         wav = torch.cat([wav] * 8, dim=1)
     length = wav.size(-1) // wrapper.hop_size * wrapper.hop_size
@@ -178,6 +179,7 @@ def main(args):
             n_fft=512, hop_length=256,
             window=window, return_complex=False
         ).clamp(min=-1.0, max=1.0).squeeze()
+        wav_out = wav_out[:T]
         scipy.io.wavfile.write("onnx/delete_it_onnx.wav", 16_000, wav_out.numpy())
         print("✅")
 
