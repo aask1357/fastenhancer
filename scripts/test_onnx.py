@@ -14,6 +14,7 @@ def main(args):
     wav, _ = librosa.load(args.audio_path, sr=16_000)
     wav = wav.reshape(1, -1)
     wav = np.clip(wav, a_min=-1, a_max=1)
+    T = wav.shape[1]
     wav = np.concatenate([wav] * 8, axis=1)
     length = wav.shape[-1]
     wav = np.pad(wav, ((0, 0), (0, args.n_fft)), mode='constant')  # pad right
@@ -53,10 +54,11 @@ def main(args):
 
     if args.save_output:
         print("Saving the output audio...", end=" ")
-        wav_out = np.concatenate(wav_out, axis=0)
+        wav_out = np.concatenate(wav_out, axis=0)        
         start_idx = args.n_fft - args.hop_size
         wav_out = wav_out[start_idx:start_idx+length]
         wav_out = np.clip(wav_out, a_min=-1.0, a_max=1.0)
+        wav_out = wav_out[:T]
         scipy.io.wavfile.write("onnx/delete_it_onnx.wav", 16_000, wav_out)
         print("✅")
 
