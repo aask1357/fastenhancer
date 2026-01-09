@@ -486,7 +486,7 @@ class Model(ONNXModel):
 def test():
     x = torch.randn(3, 16_000)
     from utils import get_hparams
-    hparams = get_hparams("configs/se/bsrnn.yaml")
+    hparams = get_hparams("configs/others/bsrnn_xt.yaml")
     model = Model(**hparams["model_kwargs"])
     wav_out, spec_out = model(x)
     (wav_out.sum() + spec_out.sum()).backward()

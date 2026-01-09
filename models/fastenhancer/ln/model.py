@@ -642,7 +642,8 @@ class Model(ONNXModel):
         return CompressedSTFT(
             n_fft=n_fft, hop_size=hop_size, win_size=win_size,
             win_type=window, normalized=normalized,
-            compression=self.input_compression
+            compression=self.input_compression,
+            discard_last_freq_bin=True,
         )
 
     def forward(self, noisy: Tensor) -> tp.Tuple[Tensor, Tensor]:
