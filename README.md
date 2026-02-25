@@ -1,5 +1,5 @@
 # Introduction
-Official repository of "FastEnhancer: Speed-Optimized Streaming Neural Speech Enhancement" (accepted at ICASSP 2026).
+Official repository of "FastEnhancer: Speed-Optimized Streaming Neural Speech Enhancement" (accepted to ICASSP 2026).  
 [Paper](https://arxiv.org/abs/2509.21867) | [Documentation](https://aask1357.github.io/fastenhancer/)
 
 # Install
@@ -444,9 +444,10 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
 <sup>b</sup> Re-implemented and trained following the experimental setup of FastEnhancer (same loss function, same optimizer, etc. Only differences are the model architectures).</p>
 
 ## 48kHz
-* We tried to include only high-quality, truly full-band speech & noise datasets.
+* We tried to include only high-quality, truly full-band speech & noise datasets (Table 3).
 * We trained each model only once with one random seed.
 * We observed that using only the 48kHz dataset led to a significant performance drop for bandwidth-limited inputs. Therefore, we dynamically applied a low-pass filter to both clean and noisy speech for each batch item during training.
+* Model configurations for the 48 kHz version differ slightly from the 16 kHz counterparts, with an increased frequency (F) for the DPT layers (Table 4).
 
 <p align=left><b>Table 3.</b> Training datasets at the sampling rate of 48kHz.</p>
 <table>
@@ -534,3 +535,14 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
   <sup>d</sup> We mixed all instruments into a single track. Then, we segmented it into 5-second clips.<br>
   <sup>e</sup> We segmented each audio into 10-second clips.
 </p>
+
+
+<p align=left><b>Table 4.</b> Model configuration comparison.</p>
+
+| size | F (16kHz version) | F (48kHz version) |
+| :---: |  :---: |  :---: |
+| Tiny | 16| 24 |
+| Base | 24 | 36 |
+| Small | 36 | 48 |
+| Medium | 48 | 64 |
+| Large | 64 | 96 |
