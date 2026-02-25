@@ -235,24 +235,6 @@ class ONNXSTFT(nn.Module):
         self.register_buffer("window_istft", window_istft, persistent=False)
         self.window_istft: Tensor
 
-    def _initialize_cache(self, x: Tensor) -> List[Tensor]:
-        cache_stft = torch.zeros(x.size(0), self.cache_len, dtype=x.dtype, device=x.device)
-        return [cache_stft]
-
-    def _forward(self, x: Tensor) -> Tensor:
-        '''x: [B=1, hop_size]
-        cache: [B=1, n_fft-hop_size]
-        output: [B, n_fft//2, T=1, 2]
-        '''
-        x = x * self.window
-        x = torch.fft.rfft(x, dim=1)            # [1, self.n_fft//2+1] (complex)
-        x = torch.view_as_real(x).unsqueeze(2)  # [1, self.n_fft//2+1, 1, 2] (real)
-        # x = x.stft(n_fft=self.n_fft, hop_length=self.hop_size,
-        #            window=self.window, normalized=self.normalized,
-        #            center=False, onesided=True, return_complex=True)
-        # x = torch.view_as_real(x)
-        return x
-
     def initialize_cache(self, x: Tensor) -> List[Tensor]:
         cache_stft = torch.zeros(x.size(0), self.cache_len, dtype=x.dtype, device=x.device)
         cache_istft = torch.zeros(x.size(0), self.cache_len, dtype=x.dtype, device=x.device)
@@ -339,14 +321,15 @@ if __name__=="__main__":
         def forward(self, x: Tensor, cache: Optional[Tensor]) -> Tuple[Tensor, Tensor]:
             return super().inverse(x, cache)
 
-    N, H, W = 512, 256, 512
+    N, H, W = 1024, 512, 1024
+    SR = 48_000
     win_type = "hann"
     stft = ONNXSTFT(N, H, win_type=win_type)
     istft = ONNXiSTFT(N, H, win_type=win_type)
     x = torch.from_numpy(
         librosa.load(
-            "/home/shahn/Datasets/voicebank-demand/16k/noisy_testset_wav/p232_045.wav",
-            sr=16_000
+            "/home/shahn/Datasets/voicebank-demand/48k/noisy_testset_wav/p232_045.wav",
+            sr=SR
         )[0]
     ).view(1, -1)
     T = x.size(-1) // H * H
@@ -358,7 +341,7 @@ if __name__=="__main__":
         cache = istft.initialize_cache(x)
         x_hat = []
         for i in tqdm(range(0, T, H)):
-            x_in = x[:, i : i + N]
+            x_in = x[:, i : i + H]
             spec = stft(x_in)
             x_out, cache = istft(spec, cache)
             x_hat.append(x_out)
@@ -370,27 +353,27 @@ if __name__=="__main__":
         exit()
 
     # Prepare inputs
-    x_in = x[:, :N]
-    spec = stft(x_in)
-    cache = istft.initialize_cache(x)
+    x_in = x[:, :H]
+    cache_stft, cache_istft = stft.initialize_cache(x)
+    spec, _ = stft(x_in, cache_stft)
 
     # Export STFT to ONNX
     torch.onnx.export(
         stft,
-        args=(x_in),
+        args=(x_in, cache_stft),
         f="onnx/delete_it.onnx",
-        input_names = ['wav_in'],
-        output_names = ['spec_out'],
+        input_names = ['wav_in', 'cache_in'],
+        output_names = ['spec_out', 'cache_out'],
         dynamo=True
     )
     onnx_stft = onnx.load("onnx/delete_it.onnx")
     onnx.checker.check_model(onnx_stft)
-    onnx_stft, check = simplify(onnx_stft)
+    # onnx_stft, check = simplify(onnx_stft)
 
     # Export iSTFT to ONNX
     torch.onnx.export(
         istft,
-        args=(spec, cache),
+        args=(spec, cache_istft),
         f="onnx/delete_it.onnx",
         input_names = ['spec_in', 'cache_in'],
         output_names = ['wav_out', 'cache_out'],
@@ -398,7 +381,7 @@ if __name__=="__main__":
     )
     onnx_istft = onnx.load("onnx/delete_it.onnx")
     onnx.checker.check_model(onnx_istft)
-    onnx_stft, check = simplify(onnx_istft)
+    # onnx_stft, check = simplify(onnx_istft)
 
     # Merge STFT, iSTFT
     merged_model = onnx.compose.merge_models(
@@ -415,15 +398,17 @@ if __name__=="__main__":
     print([x.name for x in sess.get_inputs()])
     print([x.name for x in sess.get_outputs()])
     onnx_input = {
-        "istft_cache_in": cache.numpy()
+        "stft_cache_in": cache_stft.numpy(),
+        "istft_cache_in": cache_istft.numpy()
     }
     x = x.numpy()
     y_hat = []
     for i in tqdm(range(0, T, H)):
-        onnx_input["stft_wav_in"] = x[:, i : i + N]
+        onnx_input["stft_wav_in"] = x[:, i : i + H]
         out = sess.run(None, onnx_input)
         y_hat.append(out[0][0])
-        onnx_input["istft_cache_in"] = out[1]
+        onnx_input["stft_cache_in"] = out[1]
+        onnx_input["istft_cache_in"] = out[2]
     y_hat = np.concatenate(y_hat, axis=0)
     y = x[0, :-(N-H)]
     import matplotlib.pyplot as plt

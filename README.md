@@ -1,5 +1,5 @@
 # Introduction
-Official repository of "FastEnhancer: Speed-Optimized Streaming Neural Speech Enhancement."  
+Official repository of "FastEnhancer: Speed-Optimized Streaming Neural Speech Enhancement" (accepted at ICASSP 2026).
 [Paper](https://arxiv.org/abs/2509.21867) | [Documentation](https://aask1357.github.io/fastenhancer/)
 
 # Install
@@ -442,3 +442,95 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
 </table>
 <p><sup>a</sup> Evaluated using the official checkpoint. It should be noted that this model was trained for both noise suppression and de-reverberation, whereas FastEnhancers were trained only for noise suppression. If GTCRN is trained for noise suppression only, its performance may be higher.<br>
 <sup>b</sup> Re-implemented and trained following the experimental setup of FastEnhancer (same loss function, same optimizer, etc. Only differences are the model architectures).</p>
+
+## 48kHz
+* We tried to include only high-quality, truly full-band speech & noise datasets.
+* We trained each model only once with one random seed.
+* We observed that using only the 48kHz dataset led to a significant performance drop for bandwidth-limited inputs. Therefore, we dynamically applied a low-pass filter to both clean and noisy speech for each batch item during training.
+
+<p align=left><b>Table 3.</b> Training datasets at the sampling rate of 48kHz.</p>
+<table>
+  <thead>
+    <tr>
+      <th colspan="2">Dataset</th>
+      <th rowspan="2">#files</th>
+      <th rowspan="2">total length (H:M:S)</th>
+    </tr>
+  </thead>
+  <tbody align=center>
+    <tr>
+      <td rowspan="5">Clean<br>Speech</td>
+      <td><a href="https://en.arabicspeechcorpus.com/">arabic speech</a>-train</td>
+      <td>1813</td>
+      <td>3:49:04</td>
+    </tr>
+    <tr>
+      <td><a href="https://datashare.ed.ac.uk/handle/10283/3443">VCTK-0.92</a> (except p232 and p257)</td>
+      <td>86638</td>
+      <td>81:21:45</td>
+    </tr>
+    <tr>
+      <td><a href="https://aihub.or.kr/aihubdata/data/view.do?dataSetSn=542">Korean multispeaker TTS</a>-train<sup>a</sup></td>
+      <td>120044</td>
+      <td>100:00:01</td>
+    </tr>
+    <tr>
+      <td><a href="https://aihub.or.kr/aihubdata/data/view.do?dataSetSn=71524">Multilingual (KO, EN, ES, JP)</a>-train<sup>a</sup></td>
+      <td>357847</td>
+      <td>1000:00:07</td>
+    </tr>
+    <tr>
+      <td><a href="https://aihub.or.kr/aihubdata/data/view.do?dataSetSn=466">Korean emotional TTS</a>-train<sup>a</sup></td>
+      <td>97342</td>
+      <td>100:00:03</td>
+    </tr>
+    <tr>
+      <td rowspan="8">Noise</td>
+      <td><a href="https://zenodo.org/records/1227121">DEMAMD</a>-train<sup>b</sup></td>
+      <td>6240</td>
+      <td>17:20:00</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/microsoft/DNS-Challenge">DNS-Challenge</a>-noise<sup>c</sup></td>
+      <td>1169</td>
+      <td>3:14:02</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/mdeff/fma">FMA</a><sup>c</sup></td>
+      <td>19</td>
+      <td>0:09:29</td>
+    </tr>
+    <tr>
+      <td><a href="https://msrchallenge.com/">MSRBench</a>-target<sup>c</sup></td>
+      <td>821</td>
+      <td>2:16:50</td>
+    </tr>
+    <tr>
+      <td><a href="https://zenodo.org/records/17347681">Spheres</a>-stereomix<sup>d</sup></td>
+      <td>1274</td>
+      <td>1:46:04</td>
+    </tr>
+    <tr>
+      <td><a href="https://zenodo.org/records/1228142">TUT-urban-2018-dev</a></td>
+      <td>8640</td>
+      <td>24:00:00</td>
+    </tr>
+    <tr>
+      <td><a href="http://wham.whisper.ai/">WHAM</a>-noise<sup>c e</sup></td>
+      <td>9279</td>
+      <td>25:41:52</td>
+    </tr>
+    <tr>
+      <td><a href="https://github.com/urgent-challenge/urgent2025_challenge">URGENT 2025</a>-simulated wind noise</td>
+      <td>200</td>
+      <td>0:50:00</td>
+    </tr>
+  </tbody>
+</table>
+<p>
+  <sup>a</sup> Dataset downloaded from 'The Open AI Dataset Project (AI-Hub, South Korea)'. Exporting these datasets outside of South Korea is prohibited. We randomly sampled a subset of each dataset as our code is not optimized for handling large-scale data. <br>
+  <sup>b</sup> Following the Voicebank-Demand recipe, we used "DKITCHEN, DWASHING, NFIELD, NPARK, NRIVER, OHALLWAY, OMEETING, PCAFETER, PRESTO, PSTATION, STRAFFIC, TCAR, TMETRO" for training. Other subsets are included in the Voicebank-Demand-test, which was used for our model evaluation. Also, we segmented each audio file into 10-second clips.<br>
+  <sup>c</sup> We filtered out audio files which didn't contain active segments in the 22.05~24kHz band.<br>
+  <sup>d</sup> We mixed all instruments into a single track. Then, we segmented it into 5-second clips.<br>
+  <sup>e</sup> We segmented each audio into 10-second clips.
+</p>

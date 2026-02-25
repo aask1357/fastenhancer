@@ -12,12 +12,10 @@ import scipy.io.wavfile
 def main(args):
     # Load input
     print("Preparing input...", end=" ")
-    wav, _ = librosa.load(args.audio_path, sr=16_000)
+    wav, _ = librosa.load(args.audio_path, sr=args.sr)
     wav = torch.from_numpy(wav).view(1, -1).clamp(min=-1, max=1)
-    T = wav.shape[1]
-    wav = torch.cat([wav] * 8, dim=1)
-    length = wav.size(-1) // args.hop_size * args.hop_size
-    wav = wav[:, :length]
+    length = wav.size(-1)
+    wav = torch.nn.functional.pad(wav, (0, args.hop_size))     # pad right
     if args.win_type == "hann":
         window = torch.hann_window(args.win_size)
     elif args.win_type == "hann-sqrt":
@@ -62,7 +60,7 @@ def main(args):
         for j in range(len(out)-1):
             onnx_input[f"cache_in_{j}"] = out[j+1]
     toc = time.perf_counter()
-    print(f">>> RTF: \n{(toc - tic) * 16_000 / length}")
+    print(f">>> RTF: \n{(toc - tic) * args.sr / spec.shape[2] / args.hop_size}")
 
     if args.save_output:
         print("Saving the output audio...", end=" ")
@@ -72,8 +70,8 @@ def main(args):
             n_fft=args.n_fft, hop_length=args.hop_size, win_length=args.win_size,
             window=window, return_complex=False
         ).clamp(min=-1.0, max=1.0).squeeze()
-        wav_out = wav_out[:T]
-        scipy.io.wavfile.write("onnx/delete_it_onnx.wav", 16_000, wav_out.numpy())
+        wav_out = wav_out[:length]
+        scipy.io.wavfile.write("onnx/delete_it_onnx.wav", args.sr, wav_out.numpy())
         print("✅")
 
 
@@ -81,7 +79,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
         '--audio-path', type=str,
-        default="onnx/p232_013.wav",
+        default="onnx/p232_001-009.wav",
         help="Path to audio."
     )
     parser.add_argument(
@@ -104,6 +102,10 @@ if __name__ == "__main__":
     parser.add_argument(
         '--win-type', type=str, default="hann",
         help="Window type."
+    )
+    parser.add_argument(
+        '--sr', type=int, default=16_000,
+        help="Sampling rate."
     )
     
     args = parser.parse_args()

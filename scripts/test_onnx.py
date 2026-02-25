@@ -11,11 +11,9 @@ import scipy.io.wavfile
 def main(args):
     # Load input
     print("Preparing input...", end=" ")
-    wav, _ = librosa.load(args.audio_path, sr=16_000)
+    wav, _ = librosa.load(args.audio_path, sr=args.sr)
     wav = wav.reshape(1, -1)
     wav = np.clip(wav, a_min=-1, a_max=1)
-    T = wav.shape[1]
-    wav = np.concatenate([wav] * 8, axis=1)
     length = wav.shape[-1]
     wav = np.pad(wav, ((0, 0), (0, args.n_fft)), mode='constant')  # pad right
 
@@ -50,7 +48,7 @@ def main(args):
         for j in range(len(out[1:])):
             onnx_input[f"cache_in_{j}"] = out[j+1]
     toc = time.perf_counter()
-    print(f">>> RTF: {(toc - tic) * 16_000 / length}")
+    print(f">>> RTF: {(toc - tic) * args.sr / (idx + args.hop_size)}")
 
     if args.save_output:
         print("Saving the output audio...", end=" ")
@@ -58,8 +56,7 @@ def main(args):
         start_idx = args.n_fft - args.hop_size
         wav_out = wav_out[start_idx:start_idx+length]
         wav_out = np.clip(wav_out, a_min=-1.0, a_max=1.0)
-        wav_out = wav_out[:T]
-        scipy.io.wavfile.write("onnx/delete_it_onnx.wav", 16_000, wav_out)
+        scipy.io.wavfile.write("onnx/delete_it_onnx.wav", args.sr, wav_out)
         print("✅")
 
 
@@ -71,7 +68,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         '--audio-path', type=str,
-        default="onnx/p232_013.wav",
+        default="onnx/p232_001-009.wav",
         help="Path to audio."
     )
     parser.add_argument('--save-output', action='store_true')
@@ -82,6 +79,10 @@ if __name__ == "__main__":
     parser.add_argument(
         '--hop-size', type=int, default=256,
         help="Hop size."
+    )
+    parser.add_argument(
+        '--sr', type=int, default=16_000,
+        help="Sampling rate."
     )
 
     args = parser.parse_args()

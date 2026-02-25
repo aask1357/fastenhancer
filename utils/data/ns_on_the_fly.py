@@ -181,7 +181,7 @@ class NSOnTheFlyDataset(data.Dataset):
                 audio_list.append(audio)
                 remaining_length = 0
 
-        return np.concatenate(audio_list), filenames
+        return torch.from_numpy(np.concatenate(audio_list)), filenames
 
     def shuffle(self, seed: int) -> None:
         random.Random(seed).shuffle(self.clean_filelist)
@@ -217,7 +217,7 @@ class NSOnTheFlyDataset(data.Dataset):
                     raise RuntimeError(f"len(rir) {rir_len} > hp.rir_length {self.rir_length}")
             else:
                 rir = self.empty_rir
-            data["rir"] = rir
+            data["rir"] = torch.from_numpy(rir)
 
             if "is_reverb" in self.keys:
                 data["is_reverb"] = use_reverb

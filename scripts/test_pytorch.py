@@ -25,7 +25,7 @@ def main(args):
     filelists = list(Path(args.input_dir).glob('*.wav'))
     for noisy_path in tqdm(filelists, dynamic_ncols=True, smoothing=0.0):
         # Load a noisy audio
-        noisy, fs = librosa.load(noisy_path, sr=16000, mono=True)
+        noisy, fs = librosa.load(noisy_path, sr=wrapper.sr, mono=True)
         noisy = torch.from_numpy(noisy).float().to(device).unsqueeze(0)
 
         # Inference

@@ -10,7 +10,6 @@ import torch.onnx
 from torch import Tensor
 import onnx
 import onnxruntime
-from onnxsim import simplify
 import librosa
 from tqdm import tqdm
 import scipy.io.wavfile
@@ -19,9 +18,14 @@ from utils import get_hparams
 from wrappers import get_wrapper
 
 
-def onnx_simplify(onnx_model):
-    onnx_model, check = simplify(onnx_model)
-    assert check, "Simplify failed."
+def optimize(onnx_model, method: str):
+    if method == "onnxsim":
+        from onnxsim import simplify
+        onnx_model, check = simplify(onnx_model)
+        assert check, "Simplify failed."
+    elif method == "onnxslim":
+        import onnxslim
+        onnx_model = onnxslim.slim(onnx_model)
     return onnx_model
 
 
@@ -63,7 +67,7 @@ def main(args):
         args.onnx_path = os.path.join("onnx", f"{hps.model}.onnx")
     n_fft = hps.model_kwargs.n_fft
     hop_size = hps.model_kwargs.hop_size
-    win_size = hps.model_kwargs.win_size
+    sr = hps.data.sampling_rate
     wrapper = get_wrapper(hps.wrapper)(hps)
     wrapper.load()
     wrapper.eval()
@@ -77,10 +81,8 @@ def main(args):
 
     # Load input
     print("Preparing input...", end=" ")
-    wav, _ = librosa.load(args.audio_path, sr=wrapper.sr)
+    wav, _ = librosa.load(args.audio_path, sr=sr)
     wav = torch.from_numpy(wav).view(1, -1).clamp(min=-1, max=1)
-    if not args.test_streaming and not args.test_remove_weight_reparam:
-        wav = torch.cat([wav] * 8, dim=1)
     length = wav.size(-1)
     wav = torch.nn.functional.pad(wav, (0, n_fft))     # pad right
 
@@ -94,7 +96,7 @@ def main(args):
             wav_out1, *_ = wrapper.model(wav)
         scipy.io.wavfile.write(
             "onnx/delete_it_original.wav",
-            16_000,
+            sr,
             wav_out1.clamp(min=-1, max=1).squeeze().numpy()
         )
         wrapper.model.remove_weight_reparameterizations()
@@ -102,12 +104,12 @@ def main(args):
             wav_out2, *_ = wrapper.model(wav)
         scipy.io.wavfile.write(
             "onnx/delete_it_remove_weight_reparams.wav",
-            16_000,
+            sr,
             wav_out2.clamp(min=-1, max=1).squeeze().numpy()
         )
         scipy.io.wavfile.write(
             "onnx/delete_it_diff.wav",
-            16_000,
+            sr,
             (wav_out1 - wav_out2).clamp(min=-1, max=1).squeeze().numpy()
         )
         print("✅")
@@ -120,15 +122,12 @@ def main(args):
             wav_out = wav_out[:, :length]
         scipy.io.wavfile.write(
             "onnx/delete_it_original.wav",
-            16_000,
+            sr,
             wav_out.clamp(min=-1, max=1).squeeze().numpy()
         )
         with torch.no_grad():
             out = []
             for i in tqdm(range(0, length+n_fft-hop_size, hop_size)):
-                # NOTE) wav.shape = n_fft - hop_size + length where length = k * hop_size
-                # wav is left-zero-padded
-                # wav_out.shape = length
                 wav_i = wav[:, i:i+hop_size]
                 wav_hat, *cache_list = model(wav_i, *cache_list)
                 out.append(wav_hat)         # [B, hop_size]
@@ -137,18 +136,20 @@ def main(args):
         wav_hat = wav_hat[:, start_idx:start_idx+length]
         scipy.io.wavfile.write(
             "onnx/delete_it_streaming.wav",
-            16_000,
+            sr,
             wav_hat.clamp(min=-1, max=1).squeeze().numpy()
         )
         scipy.io.wavfile.write(
             "onnx/delete_it_diff.wav",
-            16_000,
+            sr,
             (wav_out - wav_hat).clamp(min=-1, max=1).squeeze().numpy()
         )
         exit()
 
     # Export the model to ONNX
     print("Exporting the model to ONNX...")
+    dirname = os.path.dirname(args.onnx_path)
+    os.makedirs(dirname, exist_ok=True)
     torch.onnx.export(
         model,
         args=(wav[:, :hop_size], *cache_list),
@@ -159,7 +160,7 @@ def main(args):
         external_data=False,
     )
     onnx_model = onnx.load(args.onnx_path)
-    onnx_model = onnx_simplify(onnx_model)
+    onnx_model = optimize(onnx_model, args.optimization)
     onnx.checker.check_model(onnx_model)
     onnx.save(onnx_model, args.onnx_path)
 
@@ -190,7 +191,7 @@ def main(args):
         for j in range(len(out[1:])):
             onnx_input[f"cache_in_{j}"] = out[j+1]
     toc = time.perf_counter()
-    print(f">>> RTF: {(toc - tic) * 16_000 / length}")
+    print(f">>> RTF: {(toc - tic) * sr / (idx + hop_size)}")
 
     if args.save_output:
         print("Saving the output audio...", end=" ")
@@ -198,7 +199,7 @@ def main(args):
         start_idx = n_fft - hop_size
         wav_out = wav_out[start_idx:start_idx+length]
         wav_out = np.clip(wav_out, a_min=-1.0, a_max=1.0)
-        scipy.io.wavfile.write("onnx/delete_it_onnx.wav", 16_000, wav_out)
+        scipy.io.wavfile.write("onnx/delete_it_onnx.wav", sr, wav_out)
         print("✅")
 
 
@@ -220,12 +221,22 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         '--audio-path', type=str,
-        default="onnx/p232_013.wav",
+        default="onnx/p232_001-009.wav",
         help="Path to audio."
     )
     parser.add_argument(
         '--onnx-path', type=str,
         help="Path to save exported onnx file."
+    )
+    parser.add_argument(
+        '--optimization', type=str, default="onnxsim",
+        choices=["onnxsim", "onnxslim", "none"],
+        help=(
+            "ONNX optimization method. "
+            "onnxsim(default): Use ONNX Simplifier. "
+            "onnxslim: Use ONNX Slim. "
+            "none: No optimization."
+        )
     )
     parser.add_argument('--test-streaming', action='store_true')
     parser.add_argument('--test-remove-weight-reparam', action='store_true')

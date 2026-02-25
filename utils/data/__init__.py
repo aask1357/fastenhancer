@@ -34,7 +34,7 @@ def get_dataset_dataloader(
     if dataset == "NoiseSuppression":
         _Dataset, _collate = NSDataset, collate
     elif dataset == "NoiseSuppressionOnTheFly":
-        _Dataset = NSOnTheFlyDataset
+        _Dataset, _collate = NSOnTheFlyDataset, collate
     else:
         raise ValueError(f"Unknown dataset: {dataset}")
 

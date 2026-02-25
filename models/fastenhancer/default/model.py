@@ -306,31 +306,66 @@ class RNNFormerConfig:
 
 
 def rf_pre_post_lin(
-    freq: int,
+    n_freq: int,
     n_filter: int,
     init: tp.Optional[str],
     bias: bool,
     sr: int = 16_000
 ) -> tp.Tuple[nn.Module, nn.Module]:
-    assert init in [None, "linear", "linear_fixed"]
-    pre = nn.Linear(freq, n_filter, bias=bias)
-    post = nn.Linear(n_filter, freq, bias=bias)
+    assert init in [None, "linear", "linear_fixed", "mel", "mel_fixed"]
+    pre = nn.Linear(n_freq, n_filter, bias=bias)
+    post = nn.Linear(n_filter, n_freq, bias=bias)
 
     if init is None:
         return pre, post
 
-    f_filter = torch.linspace(0, sr // 2, n_filter)
-    delta_f = sr // 2 / n_filter
-    f_freqs = torch.linspace(0, sr // 2, freq)
+    if init.startswith("linear"):
+        delta = (n_freq - 1) / (n_filter - 1)
+        f_filter = torch.linspace(0, n_freq-1, n_filter)
+        f_freqs = torch.linspace(0, n_freq-1, n_freq)
+    elif init.startswith("mel"):
+        def freq_idx_to_mel(f: float) -> float:
+            hz = f / n_freq * sr / 2
+            return 2595.0 * math.log10(1 + hz / 700)
+
+        max_hz = sr / 2 * (n_freq - 1) / n_freq
+        delta_hz = max_hz / (n_freq - 1)
+        max_mel = freq_idx_to_mel(n_freq - 1)
+
+        def mel_idx_to_freq_idx(n: float) -> float:
+            mel = n / (n_filter - 1) * max_mel
+            return 700.0 * (10 ** (mel / 2595) - 1) / delta_hz
+
+        # We want to ensure that each mel filter covers at least 1 frequency bin.
+        # We use linear filters for the low frequencies where mel filters are too narow,
+        # and use mel filters for the high frequencies.
+        # The transition point is determined by the condition that
+        # the next mel filter is at least 1 frequency bin away from the current mel filter.
+        f_filter = []
+        f_cur = mel_idx_to_freq_idx(0)
+        for n_start in range(0, n_filter-1):
+            f_next = mel_idx_to_freq_idx(n_start+1)
+            if f_next - f_cur >= 1 and n_start <= f_cur:
+                print(n_start)
+                break
+            f_filter.append(n_start)
+            f_cur = f_next
+        f_filter.extend([mel_idx_to_freq_idx(n) for n in range(n_start, n_filter)])
+        f_filter = torch.tensor(f_filter, dtype=torch.float32)  # [n_filter]
+        f_freqs = torch.arange(n_freq, dtype=torch.float32)     # [n_freq]
+        delta = (f_filter[1:] - f_filter[:-1]).unsqueeze(1)     # [n_filter-1, 1]
+    else:
+        raise RuntimeError(f"init={init} is not supported.")
+
     down = f_filter[1:, None] - f_freqs[None, :]    # [n_filter - 1, freq]
-    down = down / delta_f
-    down = F.pad(down, (0, 0, 0, 1), value=1.0)     # [n_filter, freq]
-    up = f_freqs[None, :] - f_filter[:-1, None]     # [n_filter - 1, freq]
-    up = up / delta_f
-    up = F.pad(up, (0, 0, 1, 0), value=1.0)         # [n_filter, freq]
+    up   = f_freqs[None, :] - f_filter[:-1, None]   # [n_filter - 1, freq]
+    down = down / delta
+    up   = up / delta
+    down = F.pad(down, (0, 0, 0, 1), value=1.0)     # [n_filter, n_freq]
+    up   = F.pad(up, (0, 0, 1, 0), value=1.0)       # [n_filter, n_freq]
     pre_weight = torch.max(up.new_zeros(1), torch.min(down, up))
-    post_weight = pre_weight.transpose(0, 1)
     pre_weight = pre_weight / pre_weight.sum(dim=1, keepdim=True)
+    post_weight = pre_weight.transpose(0, 1)
     post_weight = post_weight / post_weight.sum(dim=1, keepdim=True)
 
     if init.endswith("_fixed"):
