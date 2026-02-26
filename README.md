@@ -447,7 +447,9 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
 * We tried to include only high-quality, truly full-band speech & noise datasets (Table 3).
 * We trained each model only once with one random seed.
 * We observed that using only the 48kHz dataset led to a significant performance drop for bandwidth-limited inputs. Therefore, we dynamically applied a low-pass filter to both clean and noisy speech for each batch item during training.
-* Model configurations for the 48 kHz version differ slightly from the 16 kHz counterparts, with an increased frequency (F) for the DPT layers (Table 4).
+* Model configurations for the 48 kHz version differ slightly from the 16 kHz counterparts:
+  * Increased frequency (F) for the RNNFormer layers (Table 4).
+  * For linear layers in pre- and post-RNNFormer, instead of using fixed weights, we made them learnable.
 
 <p align=left><b>Table 3.</b> Training datasets at the sampling rate of 48kHz.</p>
 <table>
