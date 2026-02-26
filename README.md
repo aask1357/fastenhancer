@@ -136,7 +136,7 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
     </tr>
     <tr>
       <td><i>FastEnhancer</i>_B</td>
-      <td>92</td>
+      <td>91</td>
       <td>262M</td>
       <td><strong>0.022</strong></td>
       <td><strong>0.026</strong></td>
@@ -155,7 +155,7 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
     <tr>
       <td><i>FastEnhancer</i>_T</td>
       <td><strong>22</strong></td>
-      <td><strong>55M</strong></td>
+      <td><strong>60M</strong></td>
       <td><strong>0.012</strong></td>
       <td><strong>0.013</strong></td>
       <td>3.42</td>
@@ -171,7 +171,7 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
     </tr>
     <tr>
       <td><i>FastEnhancer</i>_B</td>
-      <td>92</td>
+      <td>91</td>
       <td>262M</td>
       <td>0.022</td>
       <td>0.026</td>
@@ -188,7 +188,7 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
     </tr>
     <tr>
       <td><i>FastEnhancer</i>_S</td>
-      <td>195</td>
+      <td>194</td>
       <td>664M</td>
       <td>0.034</td>
       <td>0.048</td>
@@ -223,7 +223,7 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
     <tr>
       <td><i>FastEnhancer</i>_L</td>
       <td>1105</td>
-      <td>11G</td>
+      <td>12G</td>
       <td>0.313</td>
       <td>0.632</td>
       <td><strong>3.53</strong></td>
@@ -343,7 +343,7 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
     </tr>
     <tr>
       <td><i>FastEnhancer</i>_B</td>
-      <td>92</td>
+      <td>91</td>
       <td>262M</td>
       <td><strong>0.022</strong></td>
       <td><strong>0.026</strong></td>
@@ -361,7 +361,7 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
     <tr>
       <td><i>FastEnhancer</i>_T</td>
       <td><strong>22</strong></td>
-      <td><strong>55M</strong></td>
+      <td><strong>60M</strong></td>
       <td><strong>0.012</strong></td>
       <td><strong>0.013</strong></td>
       <td>3.81</td>
@@ -376,7 +376,7 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
     </tr>
     <tr>
       <td><i>FastEnhancer</i>_B</td>
-      <td>92</td>
+      <td>91</td>
       <td>262M</td>
       <td>0.022</td>
       <td>0.026</td>
@@ -392,7 +392,7 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
     </tr>
     <tr>
       <td><i>FastEnhancer</i>_S</td>
-      <td>195</td>
+      <td>194</td>
       <td>664M</td>
       <td>0.034</td>
       <td>0.048</td>
@@ -425,7 +425,7 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
     <tr>
       <td><i>FastEnhancer</i>_L</td>
       <td>1105</td>
-      <td>11G</td>
+      <td>12G</td>
       <td>0.313</td>
       <td>0.632</td>
       <td><strong>4.02</strong></td>
@@ -448,7 +448,8 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
 * We trained each model only once with one random seed.
 * We observed that using only the 48kHz dataset led to a significant performance drop for bandwidth-limited inputs. Therefore, we dynamically applied a low-pass filter to both clean and noisy speech for each batch item during training.
 * Model configurations for the 48 kHz version differ slightly from the 16 kHz counterparts:
-  * Increased frequency (F) for the RNNFormer layers (Table 4).
+  * We increased n_fft from 512 to 1024.
+  * We changed H (hop_size) and F (frequency for the RNNFormer layers) (Table 4).
   * For linear layers in pre- and post-RNNFormer, instead of using fixed weights, we made them learnable.
 
 <p align=left><b>Table 3.</b> Training datasets at the sampling rate of 48kHz.</p>
@@ -540,11 +541,81 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
 
 
 <p align=left><b>Table 4.</b> Model configuration comparison.</p>
-
-| size | F (16kHz version) | F (48kHz version) |
-| :---: |  :---: |  :---: |
-| Tiny | 16| 24 |
-| Base | 24 | 36 |
-| Small | 36 | 48 |
-| Medium | 48 | 64 |
-| Large | 64 | 96 |
+<table>
+  <thead>
+    <tr>
+      <th rowspan="2">size</th>
+      <th colspan="2">Para. (K)</th>
+      <th colspan="2">MACs</th>
+      <th colspan="2">H</th>
+      <th colspan="2">F</th>
+    </tr>
+    <tr>
+      <th>16khz</th>
+      <th>48khz</th>
+      <th>16khz</th>
+      <th>48khz</th>
+      <th>16khz</th>
+      <th>48khz</th>
+      <th>16khz</th>
+      <th>48khz</th>
+    </tr>
+  </thead>
+  <tbody align=center>
+    <tr>
+      <td>Tiny</td>
+      <td>22</td>
+      <td>28</td>
+      <td>60M</td>
+      <td>177M</td>
+      <td>256</td>
+      <td>512</td>
+      <td>16</td>
+      <td>24</td>
+    </tr>
+    <tr>
+      <td>Base</td>
+      <td>91</td>
+      <td>101</td>
+      <td>262M</td>
+      <td>750M</td>
+      <td>256</td>
+      <td>512</td>
+      <td>24</td>
+      <td>36</td>
+    </tr>
+    <tr>
+      <td>Small</td>
+      <td>194</td>
+      <td>207</td>
+      <td>664M</td>
+      <td>1822M</td>
+      <td>256</td>
+      <td>512</td>
+      <td>36</td>
+      <td>48</td>
+    </tr>
+    <tr>
+      <td>Medium</td>
+      <td>492</td>
+      <td>512</td>
+      <td>2.9G</td>
+      <td>8.0G</td>
+      <td>160</td>
+      <td>320</td>
+      <td>48</td>
+      <td>64</td>
+    </tr>
+    <tr>
+      <td>Large</td>
+      <td>1105</td>
+      <td>1132</td>
+      <td>12.0G</td>
+      <td>32.4G</td>
+      <td>100</td>
+      <td>200</td>
+      <td>64</td>
+      <td>96</td>
+    </tr>
+  </tbody>
+</table>
