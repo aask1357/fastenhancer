@@ -1,16 +1,17 @@
 if __name__ == "__main__":
     from utils import get_hparams
-    hp = get_hparams("configs/rnnformer/size/t_bn.yaml")["model_kwargs"]
-    SR = 16000
+    hps_all = get_hparams("configs/fastenhancer/t.yaml")
+    hp = hps_all["model_kwargs"]
+    SR = hps_all["data"]["sampling_rate"]
     F_INPUT = hp.n_fft // 2
     H = hp.hop_size
     T = SR / H
 
-    C1 = 24 #hp.channels
-    C2 = 20 #hp.rnnformer_kwargs.channels
+    C1 = hp.channels
+    C2 = hp.rnnformer_kwargs.channels
     F1 = F_INPUT // hp.stride
-    F2 = 16 #hp.rnnformer_kwargs.freq
-    K = 1 #hp.rnnformer_kwargs.num_blocks
+    F2 = hp.rnnformer_kwargs.freq
+    K = hp.rnnformer_kwargs.num_blocks
     NH = hp.rnnformer_kwargs.num_heads
 
     # Pre Encoder
