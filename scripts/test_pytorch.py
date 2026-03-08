@@ -22,6 +22,7 @@ def main(args):
     wrapper = get_wrapper(hps.wrapper)(hps, device=device)
     wrapper.load()
 
+    wrapper.model.eval()
     filelists = list(Path(args.input_dir).glob('*.wav'))
     for noisy_path in tqdm(filelists, dynamic_ncols=True, smoothing=0.0):
         # Load a noisy audio
