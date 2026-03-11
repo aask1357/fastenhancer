@@ -32,7 +32,7 @@ or
 - Path to save config, tensorboard logs, and checkpoints: `logs/dns/16khz/fastenhancer_h`
 <pre><code>CUDA_VISIBLE_DEVICES=0,1,2,3 python train.py \
   -n dns/16khz/fastenhancer_h \
-  -c configs/fastenhancer/huge_noncausal_dns.yaml \
+  -c configs/fastenhancer_dns/huge_noncausal.yaml \
   -p train.batch_size=16 valid.batch_size=16 pesq.batch_size=4 \
   -f</code></pre>
 
@@ -41,6 +41,18 @@ Options:
 - `-c` (Optional): Path to configuration file. If not given, the configuration file in the base directory will be used.  
 - `-p` (Optional): Parameters after this will update the configuration.  
 - `-f` (Optional): If the base directory already exists and `-c` flag is given, an exception will be raised to avoid overwriting config file. However, enabling this option will force overwriting config file.  
+
+## Training FastEnhancer-Small on 48kHz datasets
+- Model: FastEnhancer-Huge-Noncausal
+- Dataset: 48kHz clean speech & noise ([link](https://github.com/aask1357/fastenhancer?tab=readme-ov-file#48khz))
+- Number of GPUs: 1
+- Batch size: 64/GPU
+- Mixed-precision training with fp16: True
+- Path to save config, tensorboard logs, and checkpoints: `logs/48khz/fastenhancer_s`
+<pre><code>CUDA_VISIBLE_DEVICES=0 python train.py \
+  -n 48khz/fastenhancer_s \
+  -c configs/fastenhancer_48khz/s.yaml \
+  -f</code></pre>
 
 ## Resume Training
 Suppose you stopped the training.  

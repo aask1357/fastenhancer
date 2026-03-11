@@ -864,7 +864,7 @@ class Model(ONNXModel):
 def test():
     x = torch.randn(3, 16_000)
     from utils import get_hparams
-    hparams = get_hparams("configs/rnnformer/size/s_kernel_size.yaml")
+    hparams = get_hparams("configs/ablation/time_kernel_b.yaml")
     model = Model(**hparams["model_kwargs"])
     model.flatten_parameters()
     wav_out, spec_out = model(x)
