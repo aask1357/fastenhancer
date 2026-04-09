@@ -33,6 +33,7 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
       <th rowspan="2">MACs</th>
       <th rowspan="2">RTF<br>(Xeon)</th>
       <th rowspan="2">RTF<br>(M1)</th>
+      <th rowspan="2">RTF<br>(M5)</th>
       <th rowspan="2">DNSMOS<br>(P.808)</th>
       <th colspan="3">DNSMOS (P.835)</th>
       <th rowspan="2">SCOREQ</th>
@@ -55,6 +56,7 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
       <td><strong>40M</strong></td>
       <td>0.060</td>
       <td>0.042</td>
+      <td>0.0264</td>
       <td>3.43</td>
       <td>3.36</td>
       <td>4.02</td>
@@ -70,6 +72,7 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
       <td>LiSenNet<sup>b</sup></td>
       <td>37</td>
       <td>56M</td>
+      <td>-</td>
       <td>-</td>
       <td>-</td>
       <td>3.34</td>
@@ -89,6 +92,7 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
       <td>56M</td>
       <td>0.034</td>
       <td>0.028</td>
+      <td>0.0172</td>
       <td>3.42</td>
       <td>3.34</td>
       <td><strong>4.03</strong></td>
@@ -106,6 +110,7 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
       <td>64M</td>
       <td>0.046</td>
       <td>0.038</td>
+      <td>0.0244</td>
       <td>3.40</td>
       <td>3.33</td>
       <td>4.00</td>
@@ -123,6 +128,7 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
       <td>245M</td>
       <td>0.059</td>
       <td>0.062</td>
+      <td>0.0307</td>
       <td>3.44</td>
       <td>3.36</td>
       <td>4.00</td>
@@ -140,6 +146,7 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
       <td>262M</td>
       <td><strong>0.022</strong></td>
       <td><strong>0.026</strong></td>
+      <td><strong>0.0110</strong></td>
       <td><strong>3.47</strong></td>
       <td><strong>3.38</strong></td>
       <td>4.02</td>
@@ -158,6 +165,7 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
       <td><strong>60M</strong></td>
       <td><strong>0.012</strong></td>
       <td><strong>0.013</strong></td>
+      <td><strong>0.0058</strong></td>
       <td>3.42</td>
       <td>3.34</td>
       <td>4.01</td>
@@ -175,6 +183,7 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
       <td>262M</td>
       <td>0.022</td>
       <td>0.026</td>
+      <td>0.0110</td>
       <td>3.47</td>
       <td>3.38</td>
       <td>4.02</td>
@@ -192,6 +201,7 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
       <td>664M</td>
       <td>0.034</td>
       <td>0.048</td>
+      <td>0.0189</td>
       <td>3.49</td>
       <td>3.40</td>
       <td>4.03</td>
@@ -209,6 +219,7 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
       <td>2.9G</td>
       <td>0.101</td>
       <td>0.173</td>
+      <td>0.0386</td>
       <td>3.48</td>
       <td>3.39</td>
       <td>4.02</td>
@@ -226,6 +237,7 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
       <td>12G</td>
       <td>0.313</td>
       <td>0.632</td>
+      <td>0.1052</td>
       <td><strong>3.53</strong></td>
       <td><strong>3.44</strong></td>
       <td><strong>4.04</strong></td>
@@ -262,6 +274,7 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
       <th rowspan="2">MACs</th>
       <th rowspan="2">RTF<br>(Xeon)</th>
       <th rowspan="2">RTF<br>(M1)</th>
+      <th rowspan="2">RTF<br>(M5)</th>
       <th rowspan="2">DNSMOS<br>(P.808)</th>
       <th colspan="3">DNSMOS (P.835)</th>
       <th rowspan="2">SCOREQ</th>
@@ -283,6 +296,7 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
       <td><strong>40M</strong></td>
       <td>0.060</td>
       <td>0.042</td>
+      <td>0.0264</td>
       <td>3.85</td>
       <td>3.35</td>
       <td>3.98</td>
@@ -299,6 +313,7 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
       <td>56M</td>
       <td>0.034</td>
       <td>0.028</td>
+      <td>0.0172</td>
       <td>3.82</td>
       <td>3.39</td>
       <td>4.08</td>
@@ -315,6 +330,7 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
       <td>64M</td>
       <td>0.046</td>
       <td>0.038</td>
+      <td>0.0244</td>
       <td>3.82</td>
       <td>3.37</td>
       <td>4.09</td>
@@ -331,6 +347,7 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
       <td>245M</td>
       <td>0.059</td>
       <td>0.062</td>
+      <td>0.0307</td>
       <td>3.89</td>
       <td>3.41</td>
       <td>4.11</td>
@@ -347,6 +364,7 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
       <td>262M</td>
       <td><strong>0.022</strong></td>
       <td><strong>0.026</strong></td>
+      <td><strong>0.0110</strong></td>
       <td><strong>3.92</strong></td>
       <td><strong>3.43</strong></td>
       <td><strong>4.12</strong></td>
@@ -364,6 +382,7 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
       <td><strong>60M</strong></td>
       <td><strong>0.012</strong></td>
       <td><strong>0.013</strong></td>
+      <td><strong>0.0058</strong></td>
       <td>3.81</td>
       <td>3.35</td>
       <td>4.07</td>
@@ -380,6 +399,7 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
       <td>262M</td>
       <td>0.022</td>
       <td>0.026</td>
+      <td>0.0110</td>
       <td>3.92</td>
       <td>3.43</td>
       <td>4.12</td>
@@ -396,6 +416,7 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
       <td>664M</td>
       <td>0.034</td>
       <td>0.048</td>
+      <td>0.0189</td>
       <td>3.96</td>
       <td>3.46</td>
       <td>4.13</td>
@@ -412,6 +433,7 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
       <td>2.9G</td>
       <td>0.101</td>
       <td>0.173</td>
+      <td>0.0386</td>
       <td>3.98</td>
       <td>3.48</td>
       <td>4.14</td>
@@ -428,6 +450,7 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
       <td>12G</td>
       <td>0.313</td>
       <td>0.632</td>
+      <td>0.1052</td>
       <td><strong>4.02</strong></td>
       <td><strong>3.51</strong></td>
       <td><strong>4.16</strong></td>
@@ -549,8 +572,11 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
       <th colspan="2">MACs</th>
       <th colspan="2">H</th>
       <th colspan="2">F</th>
+      <th colspan="2">RTF (M5)<sup>a</sup></th>
     </tr>
     <tr>
+      <th>16khz</th>
+      <th>48khz</th>
       <th>16khz</th>
       <th>48khz</th>
       <th>16khz</th>
@@ -572,6 +598,8 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
       <td>512</td>
       <td>16</td>
       <td>24</td>
+      <td>0.0058</td>
+      <td>0.0122</td>
     </tr>
     <tr>
       <td>Base</td>
@@ -583,6 +611,8 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
       <td>512</td>
       <td>24</td>
       <td>36</td>
+      <td>0.0110</td>
+      <td>0.0261</td>
     </tr>
     <tr>
       <td>Small</td>
@@ -594,6 +624,8 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
       <td>512</td>
       <td>36</td>
       <td>48</td>
+      <td>0.0189</td>
+      <td>0.0421</td>
     </tr>
     <tr>
       <td>Medium</td>
@@ -605,6 +637,8 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
       <td>320</td>
       <td>48</td>
       <td>64</td>
+      <td>0.0386</td>
+      <td>0.1347</td>
     </tr>
     <tr>
       <td>Large</td>
@@ -616,6 +650,11 @@ Please refer to [document](https://aask1357.github.io/fastenhancer/onnx) for str
       <td>200</td>
       <td>64</td>
       <td>96</td>
+      <td>0.1052</td>
+      <td>0.4239</td>
     </tr>
   </tbody>
 </table>
+<p>
+  <sup>a</sup> RTF measured on a single thread of a laptop CPU (Apple M5, MacBook Air) 
+</p>
