@@ -149,7 +149,8 @@ def main(args):
     # Export the model to ONNX
     print("Exporting the model to ONNX...")
     dirname = os.path.dirname(args.onnx_path)
-    os.makedirs(dirname, exist_ok=True)
+    if dirname:
+        os.makedirs(dirname, exist_ok=True)
     torch.onnx.export(
         model,
         args=(wav[:, :hop_size], *cache_list),
@@ -232,9 +233,9 @@ if __name__ == "__main__":
         '--optimization', type=str, default="onnxsim",
         choices=["onnxsim", "onnxslim", "none"],
         help=(
-            "ONNX optimization method. "
-            "onnxsim(default): Use ONNX Simplifier. "
-            "onnxslim: Use ONNX Slim. "
+            "ONNX optimization method.\n"
+            "onnxsim(default): Use ONNX Simplifier.\n"
+            "onnxslim: Use ONNX Slim.\n"
             "none: No optimization."
         )
     )

@@ -57,33 +57,33 @@ class AdamP(Optimizer):
         super(AdamP, self).__init__(params, defaults)
 
     def project_channelwise(self, p: Tensor, perturb: Tensor, eps: float) -> Tensor:
-        x = p.view(p.size(0), -1)
+        x = p.data.view(p.size(0), -1)
         y = perturb.view(p.size(0), -1)
-        perturb = projection_channel(p.data, perturb,  eps)
+        perturb = projection_channel(x, y, eps)
         return perturb.view_as(p)
 
     def project_layerwise(self, p: Tensor, perturb: Tensor, eps: float) -> Tensor:
-        x = p.view(-1)
+        x = p.data.view(-1)
         y = perturb.view(-1)
-        perturb = projection_layer(p.data, perturb,  eps)
+        perturb = projection_layer(x, y, eps)
         return perturb.view_as(p)
 
     def _projection(self, p, grad, perturb, delta, wd_ratio, eps):
         # projection channelwise
         if len(p.shape) > 1:
-            x = p.view(p.size(0), -1)
+            x = p.data.view(p.size(0), -1)
             y = perturb.view(p.size(0), -1)
             cosine_sim = F.cosine_similarity(x, y, dim=1, eps=eps).abs_()
             if cosine_sim.max() < delta / math.sqrt(x.size(1)):
-                perturb = projection_channel(p.data, perturb,  eps)
+                perturb = projection_channel(x, y, eps)
                 return perturb.view_as(p), wd_ratio
 
         # projection layerwise
-        x = p.view(-1)
+        x = p.data.view(-1)
         y = perturb.view(-1)
         cosine_sim = F.cosine_similarity(x, y, dim=0, eps=eps).abs_()
         if cosine_sim.max() < delta / math.sqrt(x.size(0)):
-            perturb = projection_layer(p.data, perturb,  eps)
+            perturb = projection_layer(x, y, eps)
             return perturb.view_as(p), wd_ratio
 
         # if not scale-invariant, return uncahnged perturb and wd_ratio=1.0
