@@ -21,10 +21,7 @@ import soundfile as sf
 from scipy.signal import butter, sosfilt
 from tqdm import tqdm
 
-
-def get_time_string(seconds: float) -> str:
-    seconds = int(seconds)
-    return f"{seconds // 3600}:{seconds // 60 % 60:02d}:{seconds % 60:02d}"
+from utils import get_time_string
 
 
 def segment_audio(
