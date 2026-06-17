@@ -25,7 +25,7 @@ from lhotse.shar.writers import SharWriter
 
 from scripts.audiolib import active_rms_relative
 from utils import get_time_string
-from .utils import numpy_to_rec, embed_tar_offsets
+from .utils import numpy_to_rec
 
 
 TEST_SPEAKERS = {"p232", "p257"}

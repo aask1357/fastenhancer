@@ -6,6 +6,14 @@ EPS = np.finfo(float).eps
 np.random.seed(0)
 
 
+def normalize_segmental_rms(audio, rms, target_level=-25):
+    '''Normalize the signal to the target level
+    based on segmental RMS'''
+    scalar = 10 ** (target_level / 20) / (rms+EPS)
+    audio = audio * scalar
+    return audio
+
+
 # ported from https://github.com/fgnt/sms_wsj/blob/master/sms_wsj/reverb/reverb_utils.py#L170
 def get_rir_start_sample(h, level_ratio=1e-1):
     """Finds start sample in a room impulse response.

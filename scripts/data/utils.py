@@ -6,11 +6,12 @@ import math
 import io
 import subprocess
 from tqdm import tqdm
+import wave
 
-import sentencepiece as spm
 from lhotse import CutSet, Recording
 from lhotse.cut import Cut
 import numpy as np
+from torch.utils.data import Dataset as TorchDataset
 import librosa
 from scipy import signal
 import soundfile as sf
@@ -19,10 +20,125 @@ from scripts.audiolib import (
     EPS, active_rms_relative, normalize_segmental_rms,
     find_rir_onset_spectral, get_rir_start_sample,
 )
-from utils.data.directories import Directories
 
 MAXTRIES = 50
 TARGET_DB_FOR_LOADING = -25
+
+
+class RandomGain:
+    def __init__(self, low_db: float, high_db: float):
+        self.low_db = low_db
+        self.high_db = high_db
+    
+    def __call__(self, wav: np.ndarray) -> np.ndarray:
+        gain_db = np.random.uniform(self.low_db, self.high_db)
+        gain = 10**(gain_db / 20)   # dB -> amplitude# dB -> amplitude
+        return wav * gain
+
+
+AUDIO_EXT = [".wav", ".WAV", ".flac", ".FLAC", ".mp3"]
+
+
+def is_audiofile(file: str) -> bool:
+    return any(file.endswith(ext) for ext in AUDIO_EXT)
+
+
+def is_directory_to_exclude(cur_dir: Path, blacklist: tp.List[str]) -> bool:
+    parent_dir = cur_dir.parents
+    for bl in blacklist:
+        bl = Path(bl)
+        if bl in parent_dir:
+            return True
+        if bl == cur_dir:
+            return True
+    return False
+
+
+def is_file_to_exclude(file: Path, blacklist: tp.List[Path]) -> bool:
+    return file in [Path(bl) for bl in blacklist]
+
+
+class Directories:
+    def __init__(
+        self,
+        directories_to_include: tp.List[str],
+        directories_to_exclude: tp.List[str] = [],
+        extension: str = "",
+        mix: tp.Optional[tp.Dict[str, float]] = None,
+        files_to_exclude: tp.List[Path] = [],
+    ):
+        self.extension = extension
+        self.names_to_mix: tp.List[str] = []
+        self.probabilities: tp.List[float] = []
+        if mix is not None:
+            for name, prob in mix.items():
+                self.names_to_mix.append(name)
+                self.probabilities.append(prob)
+            self.names_to_mix.append("")
+            self.probabilities.append(1.0 - sum(self.probabilities))
+        
+        self.dir_filelist: tp.Dict[str, tp.List[str]] = {}
+
+        self.total_lengths = 0
+        lengths = {}
+        for directory in directories_to_include:
+            file_list = []
+            if directory.endswith(".tsv"):
+                with open(directory, "r") as f:
+                    for line in f.readlines():
+                        file = line.strip().split("\t")[0]
+                        if extension == "":
+                            if is_audiofile(file):
+                                file_list.append(file)
+                        elif file.endswith(extension):
+                            file_list.append(file[:-len(extension)])
+                directory = Path(directory).parent
+            else:
+                for root, _, files in os.walk(directory, followlinks=True):
+                    root = Path(root)
+                    
+                    if is_directory_to_exclude(root, directories_to_exclude):
+                        continue
+                    
+                    for file in files:
+                        full_path = root / Path(file)
+                        
+                        if full_path in files_to_exclude:
+                            continue
+                        
+                        file = str(full_path.relative_to(directory))
+                        if extension == "":
+                            if is_audiofile(file):
+                                file_list.append(file)
+                        elif file.endswith(extension):
+                            file_list.append(file[:-len(extension)])
+
+            if len(file_list) == 0:
+                raise RuntimeError(
+                    f"Directory {directory} has total_lengths: {len(file_list)},"
+                    " but should be > 0")
+
+            file_list.sort()
+            self.dir_filelist[directory] = file_list
+            self.total_lengths += len(file_list)
+            lengths[directory] = len(file_list)
+
+        sorted_lengths = sorted(lengths.items())
+        self.lengths = {directory: length for directory, length in sorted_lengths}
+
+    def __len__(self) -> int:
+        return self.total_lengths
+
+    def choice(self) -> str:
+        idx = random.randrange(self.total_lengths)
+        cumsum = 0
+        for directory, length in self.lengths.items():
+            if idx < cumsum + length:
+                file = self.dir_filelist[directory][idx - cumsum]
+                full_path = os.path.join(directory, file + self.extension)
+                return full_path
+            cumsum += length
+        raise RuntimeError(self.lengths, self.total_lengths, idx)
 
 
 def numpy_to_rec(wav: np.ndarray, fs: int, rec_id: str) -> Recording:
@@ -31,69 +147,6 @@ def numpy_to_rec(wav: np.ndarray, fs: int, rec_id: str) -> Recording:
     audio_bytes = buffer.getvalue()
     rec = Recording.from_bytes(audio_bytes, recording_id=rec_id)
     return rec
-
-
-def filter_cuts(cut_set: CutSet, sp: spm.SentencePieceProcessor):
-    total = 0  # number of total utterances before removal
-    removed = 0  # number of removed utterances
-
-    def remove_short_and_long_utterances(c: Cut):
-        """Return False to exclude the input cut"""
-        nonlocal removed, total
-        # Keep only utterances with duration between 1 second and 20 seconds
-        #
-        # Caution: There is a reason to select 20.0 here. Please see
-        # ./display_manifest_statistics.py
-        #
-        # You should use ./display_manifest_statistics.py to get
-        # an utterance duration distribution for your dataset to select
-        # the threshold
-        total += 1
-        if c.duration < 1.0 or c.duration > 20.0:
-            print(
-                f"Exclude cut with ID {c.id} from training. Duration: {c.duration}"
-            )
-            removed += 1
-            return False
-
-        # In pruned RNN-T, we require that T >= S
-        # where T is the number of feature frames after subsampling
-        # and S is the number of tokens in the utterance
-
-        # In ./pruned_transducer_stateless2/conformer.py, the
-        # conv module uses the following expression
-        # for subsampling
-        if c.num_frames is None:
-            num_frames = c.duration * 100  # approximate
-        else:
-            num_frames = c.num_frames
-
-        T = num_frames // 4  # subsampling factor is 4
-
-        tokens = sp.encode(c.supervisions[0].text, out_type=str)
-
-        if T < len(tokens):
-            print(
-                f"Exclude cut with ID {c.id} from training. "
-                f"Number of frames (before subsampling): {c.num_frames}. "
-                f"Number of frames (after subsampling): {T}. "
-                f"Text: {c.supervisions[0].text}. "
-                f"Tokens: {tokens}. "
-                f"Number of tokens: {len(tokens)}"
-            )
-            removed += 1
-            return False
-
-        return True
-
-    # We use to_eager() here so that we can print out the value of total
-    # and removed below.
-    ans = cut_set.filter(remove_short_and_long_utterances).to_eager()
-    ratio = removed / total * 100
-    print(
-        f"Removed {removed} cuts from {total} cuts. {ratio:.3f}% data is removed."
-    )
-    return ans
 
 
 class DirectoriesDataset:

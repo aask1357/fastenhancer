@@ -21,7 +21,7 @@ from lhotse.shar.writers import SharWriter
 
 from utils import get_time_string
 from scripts.audiolib import get_rir_start_sample
-from .utils import numpy_to_rec, embed_tar_offsets
+from .utils import numpy_to_rec
 
 
 T60_S = {
