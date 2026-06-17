@@ -116,8 +116,18 @@ def run(rank, n_gpus, hps):
         lr = wrapper.get_lr()
 
         # train
-        train_dataset.shuffle(hp.seed + epoch)  # type: ignore
+        if hasattr(train_loader.sampler, "set_epoch"):
+            train_loader.sampler.set_epoch(epoch)   # type: ignore
+        elif hasattr(train_dataset, "set_epoch"):
+            train_dataset.set_epoch(epoch)          # type: ignore
+        else:
+            train_dataset.shuffle(hp.seed + epoch)  # type: ignore
         summary_train = wrapper.train_epoch(train_loader)
+
+        # Free auxiliary iterators (fe/noise/rir shuffle buffers) in training
+        # workers so they don't compete with validation workers for RAM.
+        if hasattr(train_dataset, 'release_auxiliary'):
+            train_dataset.release_auxiliary()
 
         # valid
         summary_valid = wrapper.valid_epoch(val_loader)

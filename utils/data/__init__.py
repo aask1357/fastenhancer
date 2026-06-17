@@ -35,6 +35,9 @@ def get_dataset_dataloader(
         _Dataset, _collate = NSDataset, collate
     elif dataset == "NoiseSuppressionOnTheFly":
         _Dataset, _collate = NSOnTheFlyDataset, collate
+    elif dataset == "ShardOnTheFly":
+        from .shard_on_the_fly import build_shard_dataloader
+        return build_shard_dataloader(hps, mode=mode, keys=keys)
     else:
         raise ValueError(f"Unknown dataset: {dataset}")
 
