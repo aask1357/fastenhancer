@@ -138,6 +138,12 @@ def get_args():
         )
     )
     parser.add_argument(
+        "-e", "--extension",
+        type=str,
+        default="wav",
+        help="File extension of the audio files to process."
+    )
+    parser.add_argument(
         "-f", "--force",
         action="store_true",
         help="Force overwrite existing files."
@@ -198,7 +204,7 @@ def main():
         if args.split == "train" and is_test:
             continue
         speakers_used.append(spk)
-        for wav in sorted(spk_dir.glob("*.wav")):
+        for wav in sorted(spk_dir.glob(f"*.{args.extension}")):
             files.append(wav)
 
     if args.debug:
