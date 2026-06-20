@@ -38,6 +38,9 @@ def get_dataset_dataloader(
     elif dataset == "ShardOnTheFly":
         from .shard_on_the_fly import build_shard_dataloader
         return build_shard_dataloader(hps, mode=mode, keys=keys)
+    elif dataset == "ShardSegment":
+        from .shard_segment import build_shard_segment_dataloader_from_hps
+        return build_shard_segment_dataloader_from_hps(hps, mode=mode, keys=keys)
     else:
         raise ValueError(f"Unknown dataset: {dataset}")
 
