@@ -67,7 +67,7 @@ def run(rank, n_gpus, hps):
         init_method='env://',
         world_size=n_gpus,
         rank=rank,
-        device_id=rank
+        device_id=torch.device("cuda", rank)
     )
     hp = hps.train
 
