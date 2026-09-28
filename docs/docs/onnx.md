@@ -25,6 +25,15 @@ If you downloaded a wav2wav version in `onnx/fastenhancer_t.onnx`, run the follo
 If you downloaded a spec2spec version in `onnx/fastenhancer_t_spec.onnx`, run the following code:
 <pre><code>python -m scripts.test_onnx_spec --onnx-path onnx/fastenhancer_t_spec.onnx</code></pre>
 
+`scripts.test_onnx` supports both wav2wav input formats: older models that take
+an overlapping `n_fft`-sample frame and newer models that take a `hop_size`-sample
+chunk and cache the input overlap internally. The script reads the model's input
+shape to select the framing and adds the initial zero overlap for older models.
+Keep `--hop-size` equal to the model's output chunk size; do not change it to
+the input frame size. For example, the `onnx-vd-v1.0.0` FastEnhancer-T waveform
+model takes 512 samples and returns 256, so the default `--n-fft 512 --hop-size 256`
+settings apply. Output delay compensation remains `n_fft - hop_size` in both cases.
+
 There are some model-specific settings.  
 - For FastEnhancer-M, you should set `--hop-size 160`:
   <pre><code>python -m scripts.test_onnx --onnx-path onnx/fastenhancer_m.onnx --hop-size 160</code></pre>

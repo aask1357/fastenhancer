@@ -15,7 +15,6 @@ def main(args):
     wav = wav.reshape(1, -1)
     wav = np.clip(wav, a_min=-1, a_max=1)
     length = wav.shape[-1]
-    wav = np.pad(wav, ((0, 0), (0, args.n_fft)), mode='constant')  # pad right
 
     # Create an ONNXRuntime session
     print("✅\nCreating a ONNXRuntime session...", end=" ")
@@ -30,6 +29,24 @@ def main(args):
         providers=['CPUExecutionProvider']
     )
 
+    # Older exports take an overlapping FFT frame; newer exports cache the
+    # input overlap internally and take only one hop of new samples.
+    input_size = next(x for x in sess.get_inputs() if x.name == "wav_in").shape[-1]
+    output_size = next(x for x in sess.get_outputs() if x.name == "wav_out").shape[-1]
+    if not 0 < args.hop_size <= args.n_fft:
+        raise ValueError("Expected 0 < --hop-size <= --n-fft.")
+    if output_size != args.hop_size:
+        raise ValueError(
+            f"Model outputs {output_size} samples per hop, but --hop-size is {args.hop_size}."
+        )
+    if input_size not in (args.hop_size, args.n_fft):
+        raise ValueError(
+            f"Model expects {input_size} input samples; expected --hop-size "
+            f"({args.hop_size}) or --n-fft ({args.n_fft})."
+        )
+    left_pad = args.n_fft - args.hop_size if input_size == args.n_fft else 0
+    wav = np.pad(wav, ((0, 0), (left_pad, args.n_fft)), mode='constant')
+
     # Prepare cache
     onnx_input = {
         x.name: np.zeros(x.shape, dtype=np.float32)
@@ -42,7 +59,7 @@ def main(args):
     wav_out = []
     tic = time.perf_counter()
     for idx in tqdm(range(0, length+args.n_fft-args.hop_size, args.hop_size)):
-        onnx_input["wav_in"] = wav[:, idx:idx+args.hop_size]
+        onnx_input["wav_in"] = wav[:, idx:idx+input_size]
         out = sess.run(None, onnx_input)
         wav_out.append(out[0][0])
         for j in range(len(out[1:])):
