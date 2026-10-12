@@ -116,7 +116,10 @@ def run(rank, n_gpus, hps):
         lr = wrapper.get_lr()
 
         # train
-        if hasattr(train_loader.sampler, "set_epoch"):
+        # DistributedSampler(shuffle=False) also has set_epoch(), but it is a no-op.
+        # In that case, the dataset must shuffle itself.
+        if hasattr(train_loader.sampler, "set_epoch") \
+                and getattr(train_loader.sampler, "shuffle", True):
             train_loader.sampler.set_epoch(epoch)   # type: ignore
         elif hasattr(train_dataset, "set_epoch"):
             train_dataset.set_epoch(epoch)          # type: ignore
